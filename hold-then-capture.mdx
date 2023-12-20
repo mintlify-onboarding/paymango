@@ -1,0 +1,49 @@
+---
+title: "Hold then Capture"
+description: "What is Hold then Capture?"
+---
+
+<Warning>
+
+**Account configuration is required**
+
+Whether you are planning to use our test keys or live keys for Hold and Capture integration, you need to activate the feature first by enabling it via the [Developers tab](https://dashboard.paymongo.com/developers) (visible only for account owners)
+
+If you are the account owner and you don't see the prompt on your dashboard, feel free to reach out to [\[email protected\]](/cdn-cgi/l/email-protection#384b4d4848574a4c784859415557565f57165b5755)
+</Warning>
+
+#### To know what Hold then Capture does, let's start off by defining some important terms:
+
+**Pre-authorization** \- the process by which a hold is placed on the customer’s credit card for a specified dollar amount based on a projected sale amount.
+
+**Authorization** \- the process by which the business owner confirms that the customer actually has funds available on their card to complete the transaction
+
+**Capture** \- the process by which a transaction moves out of the pending state and the business owner gets his or her money. The business owner must give the go signal to the transaction that they really want to process the payment.
+
+<Note>
+
+**In a nutshell...**
+
+Through our Hold then Capture feature, the money is held from the transaction until you decide to capture or cancel the payment.
+</Note>
+
+Pre-authorization or manual capture will allow you to manually capture funds at a later time, which is a method to ensure that funds are available if you are not charging the customer at the same time via the PIPM workflow. 
+
+For instance, when a customer books a hotel room, the hotel places a hold on the customer's card when he or she books, but the customer is only fully charged when the stay is completed. Through this, the hotel is able to verify first if the customer has available funds before proceeding with the trip. Likewise, if the booking is canceled, then the funds on hold are automatically refunded and the customer is not charged. 
+
+##### Most of our merchants who use this feature are:
+
+* **Hotel and Resort** merchants that hold the customer's payment upon check-in, but only capture the funds upon check-out
+* **Food and delivery** merchants that hold the customer's payment upon ordering but capture the funds upon stock verification and order pick-up.
+* **Service providers** that hold funds for a free trial period before charging the customer's account upon non-cancelation.
+
+Upon authorization, we guarantee the money and hold the payment for up to 7 days. 
+
+* If the payment is not captured by this time, the authorization is canceled and funds are automatically released by PayMongo. This will be returned to your customer's account within 7 days (guaranteed!)
+* If the payment is partially captured, the remaining amount will be returned 7 days to 30 days
+
+You can process refunds right after a payment has been captured. You can also cancel the full amount before capturing so that the customer is not charged for the transaction.
+
+**\*Note:** Transaction fee for cards won't be charged if the payment on hold is canceled before capturing.\* 
+
+Currently this feature is only available for websites using the PayMongo API as you would need to have the PIPM workflow to capture and cancel payment APIs. Lastly, the capture and cancel APIs should also be integrated so the feature would work.

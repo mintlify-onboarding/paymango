@@ -1,0 +1,22 @@
+---
+title: "Refund errors"
+description: "What are the errors associated with refunds?"
+---
+
+| Error Code                                          | Reason                                                                                                                                                                                          |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| provider\_processing\_error                         | Provider is unavailable or refund error on our providers end.                                                                                                                                   |
+| resource\_processing\_state                         | There is an existing processing refund, this usually happens when you call create refund multiple times for a particular payment.                                                               |
+| resource\_processing\_error                         | Unknown error on our end.                                                                                                                                                                       |
+| refund\_not\_allowed                                | Shopify transactions can only be refunded through their dashboard.                                                                                                                              |
+| parameter\_invalid                                  | Refunds are not allowed for payments with source type.                                                                                                                                          |
+| resource\_not\_found                                | When payment does not exist                                                                                                                                                                     |
+| livemode\_mismatched                                | Payment livemode/testmode does not match the authentication's mode                                                                                                                              |
+| resource\_failed\_state                             | Only payment in paid state can be refunded                                                                                                                                                      |
+| resource\_disputed\_state                           | The payment has been disputed by the cardholder                                                                                                                                                 |
+| resource\_pending\_stateresource\_processing\_state | A previous refund request for this payment is still {processing\|pending}                                                                                                                       |
+| allowed\_date\_exceeded                             | Not allowed to refund a {payment method type} payment after {refundable days} days.                                                                                                             |
+| available\_balance\_insufficient                    | Refund amount is greater than the available payout amount.                                                                                                                                      |
+| parameter\_above\_maximum                           | The value of the amount is greater than {payment.amount}orAmount is greater than the remaining refundable value.orOnly full amounts are allowed to be refunded for {GrabPay\|PayMaya} payments. |
+| parameter\_below\_minimum                           | The value for amount cannot be less than 1000This is for stripe payments                                                                                                                        |
+| payment\_method\_not\_allowed                       | Please contact PayMongo with your transaction details to process your refund.This is for card installment.                                                                                      |

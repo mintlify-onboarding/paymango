@@ -1,0 +1,110 @@
+---
+title: "Errors"
+description: "What are the errors that I might receive?"
+---
+
+PayMongo API is RESTful and uses conventional HTTP response codes to indicate the success or failure of API requests. The table below will help you identify the meaning and the implication of error responses. As a general rule of thumb: Codes in the `2xx` range indicate success. Codes in the `4xx` range indicate a failure from the given information (e.g. missing API keys, invalid parameters, failed transaction, etc.). Codes in the `5xx` range mean that there's an unexpected error on the PayMongo servers. These shouldn't happen, but when they do, please inform us right away.
+
+### HTTP Status Codes
+
+**200** OK  
+Retrieving, creating, updating, deleting a resource use `200` HTTP code. We do not use `201` or `204` for `create` or `update` operations.
+
+---
+
+**400** Bad Request  
+The request was not understood, often caused by missing parameters, invalid payload format, validation or processing errors.
+
+---
+
+**401** Unauthorized  
+You are not authenticated. Either the PayMongo API key is not passed or invalid.
+
+---
+
+**403** Forbidden  
+You are authenticated but access to the resource is not allowed.
+
+---
+
+**404** Not Found  
+The requested resource or the API endpoint does not exist.
+
+---
+
+**500** Internal Server Error  
+Something went wrong on PayMongo's end. (Trust us, these are rare.)
+
+---
+
+### Error Response
+
+A standard JSON error response is returned whenever an issue is encountered:
+
+JSON
+
+`{
+    "errors": [
+        {
+            "code": "parameter_format_invalid",
+            "detail": "details.card_number format is invalid.",
+            "source": {
+                "pointer": "details.card_number",
+                "attribute": "card_number"
+            }
+        }
+    ]
+}
+`
+
+Errors are also returned concurrently if multiple issues are experienced. This happens most of the time when multiple field validations are violated:
+
+JSON
+
+`{
+    "errors": [
+        {
+            "code": "parameter_data_type_invalid",
+            "detail": "cvc should be a string.",
+            "source": {
+                "pointer": "cvc",
+                "attribute": "cvc"
+            }
+        },
+        {
+            "code": "parameter_invalid",
+            "detail": "The card is already expired.",
+            "source": {
+                "pointer": "exp_month",
+                "attribute": "exp_month"
+            }
+        },
+        {
+            "code": "parameter_format_invalid",
+            "detail": "number format is invalid.",
+            "source": {
+                "pointer": "number",
+                "attribute": "number"
+            }
+        }
+    ]
+}
+`
+
+**code** string  
+A string representation of a single error. This can be used as a reference in conditional statements if you prefer to use your own error message instead of using the `detail` error attribute.
+
+---
+
+**detail** string  
+A developer-friendly error message of a single error. This can also be used as an error message to inform your end users of the issue that they encountered. However, if you feel that the `detail` does not match your needs, you can utilize the `code` attribute to provide a more suitable, custom error message.
+
+---
+
+**source** dictionary  
+This attribute exists If the error originated from the JSON payload. If the error is related to the query parameter, for example the `:id` parameter when retrieving a certain resource, this attribute is not returned.
+
+| Attribute            | Description                                                                                                                                                                                                               |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **pointer** string   | If the payload attribute is nested, it is represented with a dot .. For example, source pointer details.card\_number is based on this payload:json { "data": { "attributes": { "details": { "card\_number": "abc" } } } } |
+| **attribute** string | If the payload attribute is nested but you are not interested with its position on the payload, you may just refer to the source.attribute instead.                                                                       |

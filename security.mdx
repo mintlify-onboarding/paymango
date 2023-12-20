@@ -1,0 +1,28 @@
+---
+title: "Security"
+description: "What makes PayMongo secure?"
+---
+
+Security is at the heart of everything we do at PayMongo. If you have any feedback, comments or questions about how security is done at PayMongo, please [let us know](/cdn-cgi/l/email-protection#77131201121b18071205043707160e1a181910185914181a).
+
+## Compliance with PCI-DSS standards
+
+PayMongo is a [PCI Service Provider Level 1](https://www.visa.com/splisting/searchGrsp.do?companyNameCriteria=paymongo) compliant payment provider. We have been audited by an independent PCI-certified auditor through the most stringent compliance process available in the industry.
+
+## Secure connections using HTTPS
+
+When sending information over the Internet, that data is at risk of attackers secretly intercepting it. These types of attacks are called [man in the middle](https://en.wikipedia.org/wiki/Man-in-the-middle%5Fattack) attacks. To prevent these types of vulnerabilities, we require all interactions with PayMongo, including our website, Dashboard and APIs, to be made only through [HTTPS](http://en.wikipedia.org/wiki/HTTP%5FSecure).
+
+We also use [HSTS](https://en.wikipedia.org/wiki/HTTP%5FStrict%5FTransport%5FSecurity), forcing browsers to interact with PayMongo only over HTTPS. To ensure this, PayMongo is included in the [HSTS preload lists](https://hstspreload.org/?domain=paymongo.com) of all major web browsers.
+
+## Securely integrating with PayMongo
+
+When accepting payments using PayMongo, you will be handling sensitive user information such as card details, personal data, and other sensitive information. Extra care and thought must be put in to ensure that your system remains compliant with security standards and that the communication between your customer and your servers stays secure.
+
+We designed and built our entire platform with security and ease of integration in mind, doing the complicated security operations for you so you don't have to. Nonetheless, security is a shared responsibility and applies to both PayMongo and your business.
+
+The following security concepts are used repeatedly during integration, namely encryption, authentication and tokenization:
+
+1. **Encryption.** Defend against malicious intents on stealing and abusing collected data during server and endpoint exchange.
+2. **Authentication.** Limit access to data and collection of information between authorized users and applications.
+3. **Tokenization.** Keep sensitive information secure in servers and protect it from becoming targets from malicious agents.

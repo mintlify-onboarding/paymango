@@ -1,0 +1,21 @@
+---
+title: "Older workflows"
+---
+
+> ### 📘
+> 
+> We no longer recommend using these old workflows to integrate via our API. These aren't being updated with new features and are no longer being maintained.
+> 
+> We highly recommend using the [Payment Intent workflow](/docs/pipm-workflow) when integrating and building your custom payment workflow.
+
+## Migrating from older workflows
+
+If you are currently using the **Sources workflow** to integrate via our API and accept GCash and GrabPay payments, we highly recommend migrating to the [Payment Intents workflow](/docs/pipm-workflow) as soon as possible. Not only will it be easier in the future to just manage one payment workflow especially as we add more features, but managing webhooks is now an optional step. This makes the integration less complicated as it requires less steps.
+
+### Comparing the workflows
+
+| Feature                             | Payment Intent                                                                      | Sources                                                                                               |
+| ----------------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Supported payment methods           | Cards, E-wallets (GCash, Maya, GrabPay), Buy now pay later, Direct online banking   | E-wallets (GCash and GrabPay only)                                                                    |
+| Creation and management of webhooks | Optional (but recommended)                                                          | Required                                                                                              |
+| Future feature development          | ![:white-check-mark:](/images/white-check-mark.png ":white-check-mark:") | ![:negative-squared-cross:](/images/negative-squared-cross.png ":negative-squared-cross:") |

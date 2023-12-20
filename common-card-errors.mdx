@@ -1,0 +1,71 @@
+---
+title: "Common card errors"
+description: "What are the errors associated with cards?"
+---
+
+### Declined transactions
+
+Transactions that are declined by your customer's issuing bank
+
+| Sub code                                   | Reason                                                                        | Next action                                                                                                                          |
+| ------------------------------------------ | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| generic\_decline                           | The card has been declined for an unknown reason.                             | Contact issuer or request a different card or other form of payment.                                                                 |
+| do\_not\_honor                             | The card has been declined for an unknown reason.                             | Contact issuer or request a different card or other form of payment.                                                                 |
+| payment\_refused                           | The card has been declined for an unknown reason.                             | Request a different card or other form of payment.                                                                                   |
+| insufficient\_funds                        | The card has insufficient funds to complete the purchase.                     | Request a different card or other form of payment.                                                                                   |
+| debit\_card\_usage\_limit\_exceeded        | The debit card's use frequency or maximum amount per use has been exceeded.   | Request a different card or other form of payment.                                                                                   |
+| issuer\_declined                           | The card has been declined by the issuer for an unknown reason.               | The card has been declined by the issuing bank. Please contact them for more information.                                            |
+| issuer\_not\_available                     | The card issuer could not be reached, so the payment could not be authorized. | Wait a few minutes and resend the request.                                                                                           |
+| amount\_allowed\_exceeded                  | The payment amount is invalid, or exceeds the amount that is allowed.         | If the amount appears to be correct, the customer needs to check with their card issuer that they can make purchases of that amount. |
+| call\_card\_issuer                         | Unable to process payment. Please contact your card issuer for more details.  | The card has been declined by the issuing bank. Please contact them for more information.                                            |
+| card\_not\_supported                       | The card does not support this type of purchase.                              | The customer needs to contact their card issuer to make sure their card can be used to make this type of purchase.                   |
+| card\_type\_mismatch                       | The card type is invalid or does not correlate with the credit card number.   | Confirm that the card type correlates with the credit card number specified in the request, then resend the request.                 |
+| card\_unauthorized                         | The card is inactive or not authorized for card-not-present transactions.     | The customer needs to contact their card issuer for more information or Request a different card or other form of payment.           |
+| credit\_limit\_exceeded                    | The card has reached the credit limit.                                        | Request a different card or other form of payment.                                                                                   |
+| currency\_not\_supported\_by\_card\_issuer | The card does not support the specified currency.                             | The customer needs to check with the issuer whether the card can be used for the type of currency specified.                         |
+
+### Blocked transactions
+
+Transactions blocked by our Fraud and Risk Engine, the payment processor or your customer's issuing bank 
+
+| Sub code             | Reason                                                                                | Next action                                                                                                                                               |
+| -------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| fraudulent           | The payment has been declined as it is suspected to be fraudulent.                    | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| highest\_risk\_level | The payment has been declined as it is suspected to be high risk of being fraudulent. | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| lost\_card           | The payment has been declined because the card is reported lost.                      | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| pickup\_card         | The payment has been declined because the card is reported lost or stolen.            | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| processor\_blocked   | The payment has been blocked as it is suspected to be fraudulent.                     | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| restricted\_card     | The payment has been declined because the card is reported lost or stolen.            | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| stolen\_card         | The payment has been declined because the card is reported stolen.                    | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| blocked              | The payment has been blocked by our Fraud and Risk Engine                             | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+
+### Processor issued errors
+
+| Error sub code                   | Reason                                                                                                    | Next action                                                                                                                                                     |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| avs\_failed                      | The processor declined the payment because it did not pass the Address Verification Service (AVS) check.  | You can capture the authorization, but consider reviewing the order for the possibility of fraud.                                                               |
+| card\_not\_accepted              | The card type is not accepted by the payment processor.                                                   | Contact your merchant bank to confirm that your account is set up to receive the card in question.                                                              |
+| config\_invalid\_or\_missing     | Invalid or missing merchant configuration.                                                                | The transaction failed due to unknown reason. Kindly email us at [\[email protected\]](/cdn-cgi/l/email-protection#54272124243b26201424352d393b3a333b7a373b39). |
+| customer\_blacklisted            | The eCheck payment has been declined since the account matched an entry on the processor’s negative file. | Review the order and contact the payment processor.                                                                                                             |
+| merchant\_configuration\_invalid | There is a problem with your CyberSource merchant configuration.                                          | Do not resend the request. Contact Customer Support to correct the configuration problem.                                                                       |
+| processing\_error                | The processing of the card failed due to unknown reason.                                                  | Wait a few minutes and resend the request.                                                                                                                      |
+| processor\_declined              | The payment processor declined the transaction for an unknown reason.                                     | Request a different card or other form of payment.                                                                                                              |
+| processor\_timeout               | The request was received, but there was a timeout at the payment processor.                               | The transaction failed due to unknown reason. Kindly email us at [\[email protected\]](/cdn-cgi/l/email-protection#fb888e8b8b94898fbb8b9a829694959c94d5989496). |
+| system\_error                    | There’s a problem with the payment processor’s system. Please try again later.                            | The transaction failed due to unknown reason. Kindly email us at [\[email protected\]](/cdn-cgi/l/email-protection#21525451514e5355615140584c4e4f464e0f424e4c). |
+
+### Unknown errors
+
+| Error sub code   | Reason                                                                  | Next action                                                                                                                                                        |
+| ---------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| server\_timeout  | The request was received but there was a server timeout.                | The transaction failed due to an unknown reason. Kindly email us at [\[email protected\]](/cdn-cgi/l/email-protection#4a393f3a3a25383e0a3a2b332725242d2564292527). |
+| service\_timeout | The request was received, but a service did not finish running in time. | The transaction failed due to an unknown reason. Kindly email us at [\[email protected\]](/cdn-cgi/l/email-protection#95e6e0e5e5fae7e1d5e5f4ecf8fafbf2fabbf6faf8). |
+| unknown\_error   | The transaction failed due to an unknown reason.                        | The transaction failed due to an unknown reason. Kindly email us at [\[email protected\]](/cdn-cgi/l/email-protection#4a393f3a3a25383e0a3a2b332725242d2564292527). |
+
+### Invalid card details
+
+| Error sub code        | Reason                                                                                                                                                                                                   | Next action                                                                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| card\_number\_invalid | The card number entered is invalid                                                                                                                                                                       | The card transaction failed due to incorrect details. Please verify your information and try again.                  |
+| card\_type\_mismatch  | The card type is invalid or does not correlate with the credit card number.                                                                                                                              | Confirm that the card type correlates with the credit card number specified in the request, then resend the request. |
+| cvc\_invalid          | The card verification code (CVC) is invalid.                                                                                                                                                             | Try again using the correct CVC or Request a different card or other form of payment.                                |
+| cvc\_incorrect        | The card verification number (CVN) did not match.The authorization request was approved by the card issuer but declined by CyberSource because it did not pass the card verification number (CVN) check. | You can capture the authorization, but consider reviewing the order for the possibility of fraud.                    |

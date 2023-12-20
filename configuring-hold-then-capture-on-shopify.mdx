@@ -1,0 +1,118 @@
+---
+title: "Installing Hold then Capture on Shopify"
+description: "How do I install the Hold then Capture or manual capture card feature on Shopify?"
+---
+
+> ### 🚧
+> 
+> Account configuration is required
+> 
+> Whether you are planning to use our test keys or live keys for Hold and Capture integration, you need to activate the feature first by enabling it via the [Developers tab](https://dashboard.paymongo.com/developers) (visible only for account owners)
+> 
+> If you are the account owner and you don't see the prompt on your dashboard, feel free to reach out to **[\[email protected\]](/cdn-cgi/l/email-protection#0d7e787d7d627f794d7d6c746062636a62236e6260)**
+
+### Hold then Capture on Shopify
+
+Our Hold then Capture card feature is now available on Shopify! This allows you to place a hold on a card payment and then capture or charge it at a later time. 
+
+Most businesses that use this feature are food, retail, and delivery merchants that hold the customer's payment upon ordering but capture the funds upon stock verification or order pick-up. Service providers also use this feature to hold funds when a customer books or schedules an appointment. They are then able to charge at a later time once the schedule is confirmed or the service is fulfilled. **The great thing about this feature is that you can adapt it to fit your operational processes and business needs.**
+
+You can learn more about the Hold then Capture feature by checking out our [quick guide](/docs/hold-then-capture).
+
+### Installing Hold then Capture on Shopify
+
+This process should take less than 5 minutes and can be done even without any developer experience. 
+
+Installing the Hold then Capture card feature on Shopify is divided into 2 parts:
+
+1. Installing the **Credit/Debit Card via PayMongo** Shopify plugin
+2. Switching to **Manual Capture** in your Shopify store's settings
+
+#### Installing the "Credit/Debit Card via Paymongo" Shopify plugin
+
+1. Go to the "Credit/Debit Card via PayMongo" plugin listing on the Shopify marketplace by clicking the button below:
+
+[View the app listing](https://apps.shopify.com/credit-or-debit-card-payments-via-paymongo) 
+
+1. Review the "Credit/Debit Card via PayMongo" plug-in details and click "Add App". If you aren't logged in to your Shopify account, a prompt to log in will appear. Once you're logged in, you will be redirected to the next step.
+
+![1532](/images/b88b307-Step_1.png "Step 1.png")
+
+Credit/Debit Card via PayMongo plugin listing
+
+1. Review the permission requests and privacy details for the "Credit/Debit Card via PayMongo" plugin and click "Install app" on the top right.
+
+![1554](/images/9d9401e-Step_2.png "Step 2.png")
+
+Shopify installation page
+
+1. Input your live public key and secret key to connect your PayMongo account to your Shopify store. You will get a success confirmation once done.
+
+> ### 📘
+> 
+> Public and Secret API Keys
+> 
+> You can find your live public and secret API keys on the [developer tab ](https://dashboard.paymongo.com/developers) on the PayMongo Dashboard. Make sure to toggle live mode to get your live keys.
+
+![787](/images/a1f0a39-Step_3.png "Step 3.png")
+
+Input your live public and secret keys
+
+![759](/images/c9745e4-Step_4.png "Step 4.png")
+
+Success confirmation page
+
+1. You will be redirected back to your Shopify settings. Click "Activate Credit/Debit Card via PayMongo" to activate the plug-in.
+
+![1557](/images/0030606-Step_6.png "Step 6.png")
+
+Plugin page in your Shopify settings
+
+"Credit/Debit Card via PayMongo" plug-in is now installed!
+
+You can now process credit/debit card transactions through PayMongo's "Credit/Debit Card via PayMongo" plug-in.
+
+  
+> ### ❗️
+> 
+> Using both PayMongo Shopify plugins
+> 
+> At the moment, PayMongo supports 2 Shopify plugins namely "Credit/Debit Card via PayMongo" and "Secure Payments via PayMongo".
+> 
+> "Credit/Debit Card via PayMongo" only supports card payments and the Hold then Capture card feature.  
+> "Secure Payments via PayMongo" supports card, e-wallet, buy now pay later, and our online banking payment options.
+> 
+> If you will be using both plugins and you want to use the Hold then Capture card feature, make sure to disable the card payment option on the "Secure Payments via PayMongo" plugin to avoid confusion with your customers. Kindly refer to our page on editing payment methods on Shopify.
+
+![1152](/images/dff676c-Payment_-_The_Beanery_-_Checkout_2023-03-22_15-23-28.png "Payment - The Beanery - Checkout 2023-03-22 15-23-28.png")
+
+Both PayMongo Shopify plugins on the Shopify checkout page.
+
+  
+#### Switch to Manual Capture in your Shopify settings
+
+Once you have installed the plugin and your PayMongo account is activated for the Hold then Capture card feature, you can now proceed to switch to Manual Capture in your Shopify settings. 
+
+> ### 🚧
+> 
+> Kindly note: Setting the payment capture to manual will affect all your payment plugins that support manual capture. In PayMongo's case, manual capture (or Hold then Capture) is only available on the "Credit/Debit Card via PayMongo" plugin. 
+> 
+> Shopify's guide on this can be found [here](https://help.shopify.com/en/manual/payments/payment-authorization).
+
+Steps:
+
+1. On your Shopify Settings page, go to Payments and click "Manage" under Payment capture. By default, it is set to "Automatic".
+
+![1614](/images/5fc669f-The_Beanery__Payments__Shopify_2023-03-22_15-20-53.png "The Beanery · Payments · Shopify 2023-03-22 15-20-53.png")
+
+Payments page in the Shopify settings
+
+1. You can select from the two options:  
+   1. "Automatically when order is fulfilled"  
+   2. "Manually capture payment for orders"  
+   Once you have chosen an option for the payment capture method, click "Save".
+![](/images/fae99ba-image_273.png "The Beanery · Payments · Shopify 2023-03-22 15-21-39.png") 
+
+That's it! You have now installed the "Credit/Debit Card via PayMongo plugin" as well as set your Shopify store settings to manually capture payments. You are now ready to use the Hold then Capture feature on Shopify.
+
+To learn more about how to use the Hold then Capture card feature on Shopify, you may refer to the article on our Help Center found below.

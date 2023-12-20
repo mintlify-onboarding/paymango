@@ -1,0 +1,91 @@
+---
+title: "Hold then Capture API"
+description: "How to implement the hold then capture?"
+---
+
+<Warning>
+
+**Account configuration is required**
+
+Whether you are planning to use our test keys or live keys for Hold and Capture integration, you need to activate the feature first by enabling it via the [Developers tab](https://dashboard.paymongo.com/developers) (visible only for account owners)
+
+If you are the account owner and you don't see the prompt on your dashboard, feel free to reach out to **[\[email protected\]](/cdn-cgi/l/email-protection#54272124243b26201424352d393b3a333b7a373b39)**
+</Warning>
+Hold then Capture is essentially Pre-authorization and Capture. 
+
+Credit card payments are split into two operations, namely `Authorization` and `Capture` 
+
+An `authorization` is the message PayMongo sends to the issuer to ask if we are authorized to pull money from the person's debit account or credit line. A `capture` is the actual act of pulling money from the issuer to PayMongo.
+
+Traditionally, both are called sequentially. This means that a `capture` is called automatically after an `authorization` call. This is what is known as a `straight payment` or an `automatic capture`. We currently support this feature as the default way of capturing payments.
+
+With this feature, the merchant can request to capture the funds separately. In this case, the authorization is done prior to when the transfer of funds is actually made. This is what's known as `pre-authorization` or `manual capture`.
+
+### Integrating Pre-auth and Capture through the Payment Intent Workflow
+
+The [payment intent workflow](/docs/accepting-cards) is the main workflow used to make payments via PayMongo. It's in this flow where both automatically captured payments and manually captured payments are made. By default, this workflow is set to the `automatic` capture of payments. To enable `manual captures`, a few additional steps just need to be added to the existing workflow.
+
+#### 1\. Creating a Manual Capture Payment Intent
+
+[Manual Capture Payment Intent Recipe](https://developers.paymongo.com/v2/recipes/creating-a-manual-capture-payment-intent-recipe) [API Reference](https://developers.paymongo.com/reference/create-a-paymentintent) 
+
+To create a payment intent that will be used for manual capture, the merchant can set the `capture_type` attribute in the payload of the payment intent to `manual`. When the attribute is not provided, the attribute is automatically set to `automatic`. Additionally, they can also do straight payments by setting the attribute to `automatic`.
+
+#### 2\. Attaching a Payment Method to a Payment Intent
+
+[Attach API Reference](https://developers.paymongo.com/reference/attach-to-paymentintent) 
+
+The attachment follows the [same directions](/docs/accepting-cards#3-send-card-information-to-paymongo) as normal in the PIPM workflow. After attachment, the following status flow is observed. For payment intents with the `manual` `capture_type`, after either 3DS is completed, or after attachment for non-3DS cards, **the status will become** **`awaiting_capture`**. It's in this status where the authorized payment intent is ready for capture.
+
+![](/images/Screen%20Shot%202022-02-23%20at%203.07.28%20PM.png)
+
+#### 3\. Capturing a Payment
+
+[Capture API Reference](https://developers.paymongo.com/reference/capture-a-payment) 
+
+The capture API (`POST /payment_intents/:id/capture`) can be used to capture a payment from an `awaiting_capture` payment intent. Note that the merchant can only capture **within 7 days** from when the status was set to `awaiting_capture`. After 7 days, the authorization is **automatically voided**.
+
+When capturing, the merchant can optionally set an `amount` attribute. This pertains to how much they would like to capture from an authorized payment intent. Merchants are allowed three options for this field:
+
+1. To not provide the attribute or the payload
+2. To set the value of the `amount` equal to the payment intent amount
+3. To set the value of the `amount` as **less than the amount of the payment intent**
+
+The first and second cases lead to the same result and will fully capture the authorized amount; these are called `full captures`. The third will only capture a portion of the authorized amount; this is called a `partial capture`.
+
+### ❗️
+
+On partial captures:
+
+The remaining balance of the authorized amount after partial capture is kept on hold by the issuer for around 2-4 weeks depending on the issuer. Unfortunately, it is an industry standard to let the issuer reverse the partial amount after a few weeks. We are still currently investigating a way around this issue.
+
+**Sample payload for partial captures:**
+
+JSON
+
+`{
+  "data": {
+    "attributes": {
+      "amount": 10000
+    }
+  }
+}
+`
+
+> ### 👍
+> 
+> Take note that attaching a payload is an **optional step**. It is **not required** to attach the payload if it is intended to be a `full capture`.
+
+#### Cancelling a Payment Intent
+
+[Cancel API Reference](https://developers.paymongo.com/reference/cancel-a-payment) 
+
+Payment intents can be cancelled at any time as long as they aren't in the `succeeded` or the `cancelled` status. When they are cancelled while the status is `awaiting_capture`, we void the authorization. A merchant can void within **7 days** before it is **automatically voided** by our system. 
+
+> ### ❗️
+> 
+> The payment intent status will be cancelled if it is `awaiting_capture` and it is automatically cancelled by our system in 7 days. This voiding will reflect instantaneously.
+
+#### Testing
+
+For test transactions, feel free to check out the [testing section](/docs/testing) of our developer documentation.

@@ -1,0 +1,47 @@
+---
+title: "Save Card"
+description: "What is Save Card?"
+---
+
+<Warning>
+
+**Account configuration is required before development**
+
+**For PayMongo API users:**
+
+Your account needs to be activated first before you or your developers can start testing and integration. After activation, reach out to us **[\[email protected\]](/cdn-cgi/l/email-protection#cbb8bebbbba4b9bf8bbbaab2a6a4a5aca4e5a8a4a6)** to undergo the procedure for the Save Card configuration.
+
+**For Shopify plugin users:**  
+The Save Card feature will be automatically available to eligible merchants who have integrated on Shopify.
+</Warning>
+
+#### To know what Save Card (Card Vaulting and Tokenization) does, let’s start off by defining some important terms:
+
+**Vaulting** \- the process of saving card details into a software database
+
+**Tokenization** \- the process of providing a safe reference number corresponding to the encrypted card details to be saved into the vault
+
+With these, we can safely store your customer's card details for future reuse.
+
+<Note>
+
+**In a nutshell...**
+
+The Save Card feature allows merchants the ability to save and reuse card details on our platform.
+</Note>
+
+The Save Card feature serves a variety of purposes:
+
+1. Better user experience for returning customers
+2. Allows merchants to charge customers off session.
+
+To distinguish between the two main use cases, we'll denote the first as **on session** while the latter as **off session.** This is because the customer is in the checkout session for the previous case, while the merchant charges the merchants, like a subscription service, while the cardholder is not on the checkout page.
+
+| Session Type | Description                                                                                |
+| ------------ | ------------------------------------------------------------------------------------------ |
+| on session   | Allow cardholders to use a saved card when they want to purchase in the future.            |
+| off session  | Allow merchants to charge the cardholders even without the intervention of the cardholder. |
+
+For now, we only support payments via **on session** transactions. 
+
+The Save Card feature is currently available on PayMongo API and our Shopify plugin. For websites using the PayMongo API, you would need to have the Payment Intent workflow to register your customers’ details with us.

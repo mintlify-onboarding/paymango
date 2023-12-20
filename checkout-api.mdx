@@ -1,0 +1,69 @@
+---
+title: "Checkout API"
+description: "What is the Checkout API?"
+---
+
+### Overview
+
+**PayMongo's Checkout API allows you to create a powerful checkout experience without having to build your own.** You can now streamline your payments integration using our pre-built user-friendly hosted checkout page. We have simplified the checkout process for customers while ensuring a secure digital payment experience. 
+
+> ### 📘
+> 
+> This is an API payment integration that provides merchants with a checkout page for accepting one-time payments. Developer experience is needed.
+
+![2872](/images/1f84973-PayMongo_Checkout_Benefits.png "PayMongo Checkout Benefits.png") 
+
+### Checkout Payment Journey
+
+#### Payment Selection Page
+
+Once a Checkout Session is created and your customer is redirected to the checkout page, they will see the payment selection page. Depending on your implementation, you can opt to only display specific payment methods. You can also control whether you want the order information to be displayed as a breakdown or a summary.
+
+![1918](/images/d5e3af6-Payment_Selection.png "Payment Selection.png") 
+
+   
+#### Customer Information Page
+
+After the customer selects their payment method and clicks continue, they will be shown the customer information page where they will need to enter their contact details. After clicking "Pay Now", they will be redirected to the provider/bank page where they will need to authorize the payment.
+
+> ### 🚧
+> 
+> For card payments, there will be extra fields for the billing information. The billing information can be pre-filled when creating the Checkout Session if the information is already available.
+
+![1920](/images/330fb40-Customer_Information_Page.png "Customer Information Page.png") 
+
+   
+#### Payment Success Page
+
+Once the payment is successful, they will be redirected back from the provider/bank page to the success page. The reference number, paid amount, and transaction date will be displayed for the customer's reference. You also have the option to redirect the customer back to your website or app.
+
+![1917](/images/26d8f67-Payment_Success_Page.png "Payment Success Page.png") 
+
+#### Email confirmation (optional)
+
+If you've enabled the `send_email_receipt` field, your customer would receive an email receipt after a successful transaction.
+
+![406](/images/56f7985-Email_Receipt.png "Email Receipt.png") 
+
+The next section will go into detail on how to implement the Checkout API to your website or app. We have also included a summary of the API reference guide below if you want to jump straight to the API references.
+
+   
+### API Reference Guide
+
+---
+
+A [Checkout Session resource](/reference/checkout-session-resource) represents a one-time use checkout to receive payments. The following API calls would return a Checkout Session object.  
+  
+#### Create a Checkout Session
+
+The [Create a Checkout Session](/reference/create-a-checkout) endpoint allows you to create a checkout session.  
+  
+#### Retrieve a Checkout Session
+
+The [Retrieve a Checkout](/reference/retrieve-a-checkout) endpoint returns a Checkout Session object given the Checkout Session's ID (example: `cs_zmkoMv8GQBSdaPZfJrmFnifG`).  
+  
+#### Expire a Checkout Session
+
+The [Expire a Checkout Session](/reference/expire-a-checkout-session) endpoint expires a Checkout Session object given the Checkout Session's ID (example: `cs_zmkoMv8GQBSdaPZfJrmFnifG`). Expiring a Checkout Session would make it so that the Checkout Session would not be usable and would not accept payments.  
+  
+In addition to this, we also added another webhook event: `checkout_session.payment.paid` to keep track of paid Checkout Sessions. For more information about webhooks feel free to checkout our [webhooks guide](/docs/webhooks)

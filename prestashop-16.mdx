@@ -1,0 +1,75 @@
+---
+title: "PrestaShop 1.6"
+description: "How can I integrate with PrestaShop 1.6"
+---
+
+> ### 🚧
+> 
+> Before you begin
+> 
+> **Available payment methods**
+> 
+> * Cards: Visa and Mastercard
+> * E-wallet: GCash, GrabPay, and Maya
+> 
+> **Supported versions**  
+> The PayMongo PrestaShop module is available for PrestaShop versions 1.6 and 1.7\. A minimum PHP version of 5.6 is also required.
+> 
+> **Supported currency**  
+> Your PrestaShop store must be set in Philippine peso (PHP) to use PayMongo. It will not work for other currencies.
+
+If you have a PrestaShop store, you can integrate with PayMongo with no coding at all! All you'll need is a PayMongo account.
+
+* If you don't have a PayMongo account, you can sign up [here](https://dashboard.paymongo.com/signup)
+
+### Installing PayMongo on PrestaShop
+
+To integrate PayMongo into your PrestaShop store, follow these steps:
+
+1. Download the PayMongo PrestaShop module [here](https://b.paymongocdn.com/plugins/paymongo%5Fprestashop%5F1.1.0.zip).
+2. Log in to the back office of your PrestaShop store.
+3. Navigate to the _Modules & Services_ tab for PrestaShop (version 1.6.1 and above),
+
+![](/images/ad50165-Screenshot_2021-10-21_021021_1.png "Screenshot 2021-10-21 021021 (1).png")
+
+or the _Modules_ page under the _Modules_ tab for **PrestaShop version 1.6.0**.
+
+![](/images/5e38a75-Screen_Shot_2021-10-21_at_2.29.49_AM_1.png "Screen Shot 2021-10-21 at 2.29.49 AM (1).png")
+
+1. Click on the _Add a New Module_ button and upload the PayMongo PrestaShop module downloaded from step 1
+
+> ### ❗️
+> 
+> Payment modules
+> 
+> Make sure to only install PayMongo Payment modules found on this site.
+
+![](/images/e3f82f3-Screen_Shot_2021-10-21_at_2.35.20_AM_1.png "Screen Shot 2021-10-21 at 2.35.20 AM (1).png")
+
+1. Install the module through the _Install_ button as shown below.
+
+![](/images/4f87364-Screen_Shot_2021-10-21_at_2.39.44_AM_1.png "Screen Shot 2021-10-21 at 2.39.44 AM (1).png")
+
+1. Get your API keys from your [dashboard](https://dashboard.paymongo.com). Use the toggle on the left sidebar to make sure that you're "Viewing live data". The keys you should be getting will start with pk\_live and sk\_live.
+
+![](/images/c69830e-9320712-Screen_Shot_2020-04-02_at_9.35.59_PM_1.png "9320712-Screen_Shot_2020-04-02_at_9.35.59_PM (1).png")
+
+> ### 🚧
+> 
+> Viewing live keys
+> 
+> To get your live credentials, your account must be approved. To toggle between live and test, use the toggle highlighted above
+
+1. Create the webhook [here](https://paymongo-webhook-tool.meeco.dev/), under the Generate tab. Input your secret key (either live or testing, depending on which environment you're generating the secret for).
+* For the Webhook URL - add _/module/paymongo/webhooks_ to your PrestaShop store URL. For example, if your PrestaShop store URL is [https://paymongo.com](https://paymongo.com), the URL to be inputted will be [https://paymongo.com/module/paymongo/webhooks](https://paymongo.com/module/paymongo/webhooks). **Take note whether your site starts with _http_ or _https_ and input it accordingly**
+* Click the "Generate Webhook" button and you'll receive the following response. Take note of your webhook's secret key (highlighted in red in the sample image below).
+
+![](/images/0b6c8cd-Generate_Webhook.png "Generate Webhook.png")
+
+1. Input your credentials below. At this step, you may toggle your preferred payment methods on or off.
+
+![](/images/34229eb-Screen_Shot_2021-10-21_at_3.10.39_AM.png "Screen Shot 2021-10-21 at 3.10.39 AM.png")
+
+You may toggle between test and live mode here as well.
+
+Congratulations! You've successfully integrated PayMongo into your PrestaShop store.

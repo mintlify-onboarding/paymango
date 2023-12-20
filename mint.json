@@ -1,0 +1,91 @@
+{
+    "name": "paymongo",
+    "logo": {
+      "light": "/logo.png",
+      "dark": "/logo.png"
+    },
+    "favicon": "/favicon.png",
+    "colors": {
+      "primary": "#22B47E",
+      "light": "#44D6A0",
+      "dark": "#22B47E"
+    },
+    "topbarCtaButton": {
+      "name": "Log In",
+      "url": "https://dashboard.paymongo.com/login"
+    },
+    "topbarLinks": [
+      {
+        "name": "Sign Up",
+        "url": "https://dashboard.paymongo.com/signup"
+      }
+    ],
+    "anchors": [
+      {
+        "name": "Help Center",
+        "icon": "block-question",
+        "url": "https://paymongo.help/en/"
+      },
+      {
+        "name": "Secure",
+        "icon": "lock",
+        "url": "https://www.paymongo.com/secure"
+      },
+      {
+        "name": "Blog",
+        "icon": "newspaper",
+        "url": "https://www.paymongo.com/blog"
+      }
+    ],
+    "tabs": [
+        {
+            "name": "API Reference",
+            "url": "api-reference"
+        }
+    ],
+    "feedback": {
+        "thumbsRating": true,
+        "suggestEdit": true,
+        "raiseIssue": true
+    },
+    "navigation": [
+        {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "security",
+              "getting-started",
+              "account-activation",
+              "payment-methods-activation"
+            ]
+          },
+          {
+            "group": "Payment Methods",
+            "pages": [
+              {
+                "group": "Cards",
+                "pages": [
+                  "cards-1",
+                  "hold-then-capture",
+                  "card-vaulting",
+                  "installments"
+                ]
+              },
+              "e-wallets",
+              "dob",
+              "bnpl"
+            ]
+          },
+          {
+            "group": "Payment Methods",
+            "pages": [
+                "api-reference/create-a-checkout-session"
+            ]
+          }
+    ],
+    "footerSocials":
+      {
+          "twitter": "https://twitter.com/paymongo",
+          "linkedin": "https://www.linkedin.com/company/paymongo/"
+      }
+  }

@@ -1,0 +1,35 @@
+---
+title: "Refunding transactions"
+description: "How do I refund transactions?"
+---
+
+### Overview
+
+PayMongo allows you to refund your customer's payments in full or partial amounts. A payment with a status of `paid` are the payments that can be refunded via the PayMongo dashboard or via our Public API. Kindly note that only **live transactions** can be refunded.
+
+The refund will be deducted from your upcoming payout balance. The refund can't be canceled anymore when it's been requested and processed.
+
+> ### ❗️
+> 
+> Payout balance
+> 
+> If your upcoming payout balance is not enough to cover the refund, the request will not push through until there is a sufficient balance amount.
+
+Refunds can only be made a certain time after the payment has been made:
+
+| Transaction type                   | Timespan                                 |
+| ---------------------------------- | ---------------------------------------- |
+| Debit and credit card transactions | Within 60 days from the date of payment  |
+| GCash transactions                 | Within 180 days from the date of payment |
+| GrabPay transactions               | Within 90 days from the date of payment  |
+| PayMaya transactions               | Within 365 days from the date of payment |
+
+> ### 🚧
+> 
+> Additional notes
+> 
+> • Transactions made over-the-counter cannot be refunded  
+> • Transactions from Shopify can only be refunded through the [Shopify dashboard](https://paymongo.help/en/articles/4569083-how-do-i-refund-shopify-transactions)  
+> • Payments that have been fully refunded can no longer be disputed. Partial refunds are not applicable to GrabPay and PayMaya transactions
+> 
+> Feel free to explore this [help center article](https://paymongo.help/en/articles/3683564-how-do-i-refund-a-payment) for more information on how to create a refunds on the PayMongo dashboard.

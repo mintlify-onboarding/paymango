@@ -1,0 +1,246 @@
+{
+        "openapi": "3.1.0",
+        "info": {
+            "title": "PayMongo API",
+            "version": "2"
+        },
+        "servers": [
+            {
+                "url": "https://api.paymongo.com"
+            }
+        ],
+        "components": {
+            "securitySchemes": {
+                "sec0": {
+                    "type": "http",
+                    "scheme": "basic"
+                }
+            }
+        },
+        "security": [
+            {
+                "sec0": []
+            }
+        ],
+        "paths": {
+            "/v1/checkout_sessions": {
+                "post": {
+                    "summary": "Create a Checkout Session",
+                    "description": "Use secret API key to create a Checkout Session",
+                    "operationId": "create-a-checkout",
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "in": "header",
+                            "schema": {
+                                "type": "string",
+                                "default": "application/json"
+                            }
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "attributes": {
+                                                    "properties": {
+                                                        "cancel_url": {
+                                                            "type": "string",
+                                                            "description": "A URL link used to go back to the merchant's page. No actual canceling of records is done."
+                                                        },
+                                                        "billing": {
+                                                            "properties": {
+                                                                "address": {
+                                                                    "properties": {
+                                                                        "line1": {
+                                                                            "type": "string",
+                                                                            "description": "Line1 of the billing address information"
+                                                                        },
+                                                                        "line2": {
+                                                                            "type": "string",
+                                                                            "description": "Line2 of the billing address information"
+                                                                        },
+                                                                        "city": {
+                                                                            "type": "string",
+                                                                            "description": "City of the billing address information"
+                                                                        },
+                                                                        "state": {
+                                                                            "type": "string",
+                                                                            "description": "State of the billing address information"
+                                                                        },
+                                                                        "postal_code": {
+                                                                            "type": "string",
+                                                                            "description": "Postal Code of the billing address information"
+                                                                        },
+                                                                        "country": {
+                                                                            "type": "string",
+                                                                            "description": "Country of the billing address information. Possible values are ISO 3166-1 alpha-2 codes or two-letter country codes.."
+                                                                        }
+                                                                    },
+                                                                    "required": [],
+                                                                    "type": "object"
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "description": "Name of the billing information."
+                                                                },
+                                                                "email": {
+                                                                    "type": "string",
+                                                                    "description": "E-mail address of the billing information."
+                                                                },
+                                                                "phone": {
+                                                                    "type": "string",
+                                                                    "description": "Phone of the billing information."
+                                                                }
+                                                            },
+                                                            "required": [],
+                                                            "type": "object"
+                                                        },
+                                                        "description": {
+                                                            "type": "string",
+                                                            "description": "Description details of the checkout."
+                                                        },
+                                                        "line_items": {
+                                                            "type": "array",
+                                                            "description": "A list of items included in the checkout that the customer is paying for. A maximum of 999 line items can only be added.",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "amount": {
+                                                                        "type": "integer",
+                                                                        "description": "The amount of the item in centavo. If you want to create a link with an amount of 1.00, the value that you should pass is 100. If you want to create a link with an amount of 1500.50, the value that you should pass is 150050.",
+                                                                        "format": "int32"
+                                                                    },
+                                                                    "currency": {
+                                                                        "type": "string",
+                                                                        "description": "Three-letter ISO currency code, in uppercase. PHP is the only supported currency as of the moment.",
+                                                                        "default": "PHP"
+                                                                    },
+                                                                    "description": {
+                                                                        "type": "string",
+                                                                        "description": "A string that describes the item. The description should have a maximum length of 255 characters."
+                                                                    },
+                                                                    "images": {
+                                                                        "type": "array",
+                                                                        "description": "A list of URLs directing to an image that will be used to display product images in the Checkout page. Pass only one (1) URL since only a single image display per item is supported as of the moment.",
+                                                                        "default": [],
+                                                                        "items": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "description": "Required. Name of the item."
+                                                                    },
+                                                                    "quantity": {
+                                                                        "type": "integer",
+                                                                        "description": "The quantity of the item. Minimum value of 1 and maximum value of 1000000000.",
+                                                                        "format": "int32"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "amount",
+                                                                    "currency",
+                                                                    "name",
+                                                                    "quantity"
+                                                                ],
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "payment_method_types": {
+                                                            "type": "array",
+                                                            "description": "The list of payment method types that the checkout is allowed to use. Possible values are `billease`, `card`, `dob`, `dob_ubp`, `gcash`, `grab_pay` and `paymaya`.  An API Get Merchant Payment Methods is available to retrieve the current configured payment methods of the merchant.",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "reference_number": {
+                                                            "type": "string",
+                                                            "description": "A merchant defined string that contains the external reference number."
+                                                        },
+                                                        "send_email_receipt": {
+                                                            "type": "boolean",
+                                                            "description": "Flag configuration to control if a payment confirmation will be sent to the customer via email as a form of receipt.",
+                                                            "default": false
+                                                        },
+                                                        "show_description": {
+                                                            "type": "boolean",
+                                                            "description": "Flag configuration to control the display of the checkout description on the checkout page.",
+                                                            "default": true
+                                                        },
+                                                        "show_line_items": {
+                                                            "type": "boolean",
+                                                            "description": "Flag configuration to determine if the items will be displayed on the checkout page.  Default value is true.",
+                                                            "default": true
+                                                        },
+                                                        "success_url": {
+                                                            "type": "string",
+                                                            "description": "A URL link used to redirect the customer after a successful payment."
+                                                        },
+                                                        "statement_descriptor": {
+                                                            "type": "string",
+                                                            "description": "Use this value as the complete description that appears on your customer's statements. Your account's business name is the default value if not passed."
+                                                        },
+                                                        "metadata": {
+                                                            "type": "object",
+                                                            "description": "A set of key-value pairs that you can attach to the resource. This can be useful for storing additional information about the object in a structured format. Only string values are accepted.",
+                                                            "properties": {}
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "line_items",
+                                                        "payment_method_types"
+                                                    ],
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "required": [],
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "200",
+                            "content": {
+                                "application/json": {
+                                    "examples": {
+                                        "Result": {
+                                            "value": "{}"
+                                        }
+                                    },
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {}
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "400",
+                            "content": {
+                                "application/json": {
+                                    "examples": {
+                                        "Result": {
+                                            "value": "{}"
+                                        }
+                                    },
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "deprecated": false
+                }
+            }
+        }
+}

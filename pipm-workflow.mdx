@@ -1,0 +1,223 @@
+---
+title: "Payment Intent workflow"
+description: "How do I implement the Payment Intent workflow?"
+---
+
+**The Payment Intent workflow is used to accept these payment methods:**
+
+| Category                     | Payment Method                          |
+| ---------------------------- | --------------------------------------- |
+| Credit & Debit Card payments | Straight card paymentsCard installments |
+| E-Wallets                    | MayaGCashGrabPay                        |
+| Buy Now, Pay Later           | BillEase                                |
+| Direct Online Banking        | BPI OnlineUBP Online                    |
+
+Building an integration with Payment Intents API involves two actions: creating and attaching a PaymentMethod to a PaymentIntent. 
+
+![940](/images/b5d90a5-card_workflow.jpg "card_workflow.jpg")
+
+Sample Card Workflow
+
+A [Payment Intent resource](/reference/the-payment-intent-object) represents a single shopping cart or customer session in your application. The Payment Intent holds information such as the supported payment methods, the amount to collect, and the currency. 
+
+A [Payment Method resource](/reference/the-payment-method-object) resource represents the billing details of the customer. This includes credit card information, name, email, and address.
+
+## Implementation
+
+> ### 📘
+> 
+> In navigating this guide, you will encounter Recipes and API References. **Recipes** are snippets of API calls that differentiates the API call from each Payment Method. **API References** are the page where you can test out and view the fields for each API call.
+
+### 1\. Creating a PaymentIntent from the server-side
+
+[Creating a Payment Intent Recipe](https://developers.paymongo.com/v2/recipes/creating-a-payment-intent-recipe) [API Reference](https://developers.paymongo.com/reference/create-a-paymentintent) 
+
+To start receiving payments with Payment Intents API, you must [create](/reference#create-a-paymentintent) one first. You must create your Payment Intent from your backend using your [secret API key](/docs/authentication#section-public-and-secret-keys) then send the `client_key` of the response to the client-side. This client\_key will be used to attach a payment method to the payment intent. In this step, the payment intent's status is `awaiting_payment_method`. Store the Payment Intent ID.
+
+### 2\. Create a Payment Method from the client-side
+
+[Creating a Payment Method Recipe](https://developers.paymongo.com/v2/recipes/create-a-payment-method-recipe) [API Reference](https://developers.paymongo.com/reference/create-a-paymentmethod) 
+
+Collect billing Information from the client-side with the use of forms. We do not recommend storing this information on your server. Send this information over to us and we'll handle the rest! Create a payment method by calling our Create A Payment Method API: [https://developers.paymongo.com/reference#create-a-paymentmethod](/reference#create-a-paymentmethod). Store the Payment Method ID. 
+
+_NOTE: Do not send the credit card information to your backend, sending the information to your backend requires your platform to conform with PCI-DSS regulations._
+
+### 3\. Attach the Payment Intent to the Payment Method
+
+[Attach API Reference](https://developers.paymongo.com/reference/attach-to-paymentintent) 
+
+Attach the Payment Intent to the Payment Method by calling our [Attach API](/reference#attach-to-paymentintent). Attaching the Payment Intent can be done on the client side or the server side. The implementation is completely up to the merchant's choice. 
+
+On the client side, you need to use the `client_key` found in the PaymentIntent to serve as the identifier of PaymentIntent in the attach endpoint. 
+
+We do recommend that for those implementing our [Save Card](/docs/card-vaulting), the Attach API call is done on the server side to lessen the amount of routes that are needed to be developed. 
+
+Once the Payment Method is attached, the Payment Intent status transitions to `awaiting_next_action` , `awaiting_payment_method` , `processing` or `succeeded`. You can check the status of the Payment Intent from the JSON response of the attach payment method endpoint.
+
+### 4\. Redirecting the customer for authentication
+
+If the attach returns an `awaiting_next_action` status, it means your customer must authenticate the transaction. The response includes a redirect URL where the customer can proceed with 3D Secure authentication. You can render an iframe in a modal to display the authentication page. Once the user successfully authenticates the transaction, you can recheck the status of Payment Intent.
+
+JavaScript
+
+`` // The example is using axios as the REST client on the client-side.
+
+// This PaymentMethod ID must be created before the attach action. This is just a sample value to represent a PaymentMethod
+var paymentMethodId = 'pm_ajeDG2y6WgnrCXaamWFmPUw2';
+
+// PaymentIntent client_key example
+var clientKey = 'pi_1JvFbEiRRnh2fsUE5nJ2F1z7_client_mpe6tJkgaX3pSoiYeSp1AbEU';
+
+// Get the payment intent id from the client key
+var paymentIntentId = clientKey.split('_client')[0];
+
+axios.post(
+  'https://api.paymongo.com/v1/payment_intents/' + paymentIntentId + '/attach',
+  {
+    data: {
+      attributes: {
+        client_key: clientKey,
+        payment_method: paymentMethodId
+      }
+    }
+  },
+  {
+    headers: {
+      // Base64 encoded public PayMongo API key.
+      Authorization: `Basic ${window.btoa(key)}`
+    }
+	}
+).then(function(response) {
+  var paymentIntent = response.data.data;
+  var paymentIntentStatus = paymentIntent.attributes.status;
+  
+  if (paymentIntentStatus === 'awaiting_next_action') {
+    // Render your modal for 3D Secure Authentication since next_action has a value. You can access the next action via paymentIntent.attributes.next_action.
+  } else if (paymentIntentStatus === 'succeeded') {
+    // You already received your customer's payment. You can show a success message from this condition.
+  } else if(paymentIntentStatus === 'awaiting_payment_method') {
+    // The PaymentIntent encountered a processing error. You can refer to paymentIntent.attributes.last_payment_error to check the error and render the appropriate error message.
+  }  else if (paymentIntentStatus === 'processing'){
+    // You need to requery the PaymentIntent after a second or two. This is a transitory status and should resolve to `succeeded` or `awaiting_payment_method` quickly.
+  }
+})
+ ``
+
+We send a `3DS-authentication-complete` post message from the iframe to your page once authentication is complete. You can use this event to do further actions once the payment intent status has changed.
+
+JavaScript
+
+`` window.addEventListener(
+  'message',
+  ev => {
+    if (ev.data === '3DS-authentication-complete') {
+      // 3D Secure authentication is complete. You can requery the payment intent again to check the status.
+      
+      // PaymentIntent client_key example
+      var clientKey = 'pi_1JvFbEiRRnh2fsUE5nJ2F1z7_client_mpe6tJkgaX3pSoiYeSp1AbEU';
+      
+      axios.get(
+        'https://api.paymongo.com/v1/payment_intents/' + paymentIntentId + '?client_key=' + clientKey,
+        {
+          headers: {
+            // Base64 encoded public PayMongo API key.
+            Authorization: `Basic ${window.btoa(key)}`
+          }
+        }
+      ).then(function(response) {
+        var paymentIntent = response.data.data;
+        var paymentIntentStatus = paymentIntent.attributes.status;
+
+        if (paymentIntentStatus === 'succeeded') {
+          // You already received your customer's payment. You can show a success message from this condition.
+        } else if(paymentIntentStatus === 'awaiting_payment_method') {
+          // The PaymentIntent encountered a processing error. You can refer to paymentIntent.attributes.last_payment_error to check the error and render the appropriate error message.
+        } else if (paymentIntentStatus === 'processing'){
+          // You need to requery the PaymentIntent after a second or two. This is a transitory status and should resolve to `succeeded` or `awaiting_payment_method` quickly.
+  			}
+      })
+    }
+  },
+  false
+);
+ ``
+
+`awaiting_payment_method` means there are errors after attaching the Payment Method to the PaymentIntent. You can check the attribute `last_payment_error` from the response. If this occurs, the customer can try to input their billing information again.
+
+`processing` is a transitory status that indicates that the payment is being processed. This status will eventually resolve to `succeeded` or `awaiting_payment_method`. If this occurs, you should requery the status of the PaymentIntent in 1-2 seconds.
+
+`succeeded` means you received the payment of the customer and you can show a success message after this happened.
+
+Whenever you will attach a PaymentMethod to a PaymentIntent and the PaymentIntent succeeds or you encountered a payment error, a Payment is automatically created for you. This means that you don't need to call the create Payment after attaching a PaymentMethod. You can verify if you received the payment by going to the `Payments` module of your [dashboard](https://dashboard.paymongo.com) or you can also retrieve the PaymentIntent using secret API key and check the `payments` attribute.
+
+### 5\. Finish
+
+Get notified when you have successful or failed transactions by using webhooks. To monitor the transition of the PaymentIntent from your backend, you could be notified for successful and failed payments by listening to `payment.paid` and `payment.failed` events by registering your webhook endpoint using our [Webhook API](/reference#webhook-resource).
+
+> ### 🚧
+> 
+> Webhooks
+> 
+> You should not create a webhook in your code. You can try using API tools such as Postman or curl to create your webhook once. Please take note that you should not create multiple webhooks for every source that will be created. One webhook with events `payment.paid` and `payment.failed` is enough to receive the payment information.
+
+Event notifications will be sent to your registered webhook endpoint containing relevant payment information as shown below:
+
+payment.paid Event for successful payments
+
+`{
+  "data": {
+    "id": "evt_9w6KTxQY3hmuDQaALHoAZnRp",
+    "type": "event",
+    "attributes": {
+      "type": "payment.paid",
+      "livemode": false,
+      "data": {
+        "id": "pay_JMg1rgaUtg5U79rRSjiDUvLr",
+        "type": "payment",
+        "attributes": {
+          "access_url": null,
+          "amount": 10000,
+          "balance_transaction_id": "bal_txn_4LqZEXFNKR9e8GyAmXBgBF1C",
+          "billing": null,
+          "currency": "PHP",
+          "description": null,
+          "disputed": false,
+          "external_reference_number": null,
+          "fee": 1850,
+          "foreign_fee": 100,
+          "livemode": false,
+          "net_amount": 8050,
+          "origin": "api",
+          "payment_intent_id": "pi_1Pb5ED9RDLCSsWMwXT5W6Q3K",
+          "payout": null,
+          "source": {
+            "id": "card_iYXhMRiwoiF45V2fDL6aTjqN",
+            "type": "card",
+            "brand": "visa",
+            "country": "US",
+            "last4": "4345"
+          },
+          "statement_descriptor": "Rigorilla Tech",
+          "status": "paid",
+          "tax_amount": null,
+          "refunds": [],
+          "taxes": [],
+          "available_at": 1619686800,
+          "created_at": 1619426488,
+          "paid_at": 1619426488,
+          "updated_at": 1619426488
+        }
+      },
+      "previous_data": {},
+      "created_at": 1619426488,
+      "updated_at": 1619426488
+    }
+  }
+}
+`
+
+You can determine if a payment is successful or not by checking the event type or the status of the payment intent.
+
+You may also watch this video guide:
+
+[undefined](https://www.loom.com/embed/db239c2d23f64c4eb13650822e601015?sid=7475be16-abc3-4a8f-80aa-757eee4cc32c%22 "loom.com")

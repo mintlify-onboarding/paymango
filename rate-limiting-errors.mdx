@@ -1,0 +1,13 @@
+---
+title: "Rate limiting"
+description: "Does PayMongo limit my requests?"
+---
+
+### Rate Limiting
+
+A rate limit is the number of API calls an app or user can make within a time period. We hard enforce our rate limit as follows:
+
+1. Users retrying a 401 error 10 times within 60 seconds will be blocked from the API for 30 days
+2. Users can retry a 404 error up to 30 times per 60 seconds
+
+Users who meet the conditions above will receive the error: `too_many_requests`. If this happens, kindly contact [\[email protected\]](/cdn-cgi/l/email-protection#e2868794878e8d92879091a292839b8f8d8c858dcc818d8f).

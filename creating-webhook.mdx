@@ -1,0 +1,126 @@
+---
+title: "Creating webhook"
+description: "How do I create a webhook?"
+---
+
+> ### 🚧
+> 
+> **Creating a webhook is essentially letting us know where to send the webhook event.**
+> 
+> * Don't call a create webhook per resource that you want to receive.
+> * Don't call the create webhook endpoint as well from your code. Creating a webhook should only happen once to register a webhook during your testing or before going live.
+> * Always respond with a 200 or 2xx after receiving the webhook event.
+
+### 1\. Creating a Webhook for the event that you want to listen
+
+Create a Webhook resource using [curl](https://curl.haxx.se/docs/manpage.html) command or any API tools like [Postman](https://www.postman.com/). For testing purposes, you need to use your test API key whenever you create a webhook. Please visit this [section](/docs/testing) for more information about testing webhooks.
+
+For more information about a Webhook resource and for the events you could subscribe to, please see this [section](/docs/webhooks) 
+
+### 2\. Respond to the webhook event
+
+The webhook URL you registered will receive the event data via `POST` HTTP method and in JSON format. 
+
+JSON
+
+`
+{
+   "data":{
+      "id":"evt_41waYXad8VuenT671SucbQJF",
+      "type":"event",
+      "attributes":{
+         "type":"source.chargeable",
+         "livemode":true,
+         "data":{
+            "id":"src_wZ8pJPV6tL4Dwfq8YgaXMKAR",
+            "type":"source",
+            "attributes":{
+               "amount":10000,
+               "billing":{
+                  "address":{
+                     "city":"Taguig",
+                     "country":"PH",
+                     "line1":"9th Avenue and 26th Street, Unit 3308",
+                     "line2":"High Street South Corporate Plaza Tower 2",
+                     "postal_code":"1634",
+                     "state":"Metro Manila"
+                  },
+                  "email":"[[email protected]](/cdn-cgi/l/email-protection)",
+                  "name":"Triz Leon",
+                  "phone":"09168268582"
+               },
+               "currency":"PHP",
+               "livemode":true,
+               "redirect":{
+                  "checkout_url":"https://someurl",
+                  "failed":"https://links.staging.paymongo.dev/gcash/failed",
+                  "success":"https://links.staging.paymongo.dev/gcash/success"
+               },
+               "status":"chargeable",
+               "type":"grab_pay",
+               "created_at":1582178677
+            }
+         },
+         "previous_data":{
+            
+         },
+         "pending_webhooks":0,
+         "created_at":1582178707,
+         "updated_at":1582178707
+      }
+   }
+}
+`
+
+The JSON above is the example data that your webhook URL will receive. `source.chargeable` event is the example event in this scenario. You can also get the source details from this data.
+
+Once you receive this, you can do things like creating a payment based on the data, verify if the data sent is acknowledged by your system or save it.
+
+You need to respond with a 2xx response. If you do not respond with that HTTP code, we will try to resend the event. We will retry the call up to twelve times, with [exponential backoff](https://en.wikipedia.org/wiki/Exponential%5Fbackoff).
+
+> ### ❗️
+> 
+> You need to return with a 200 or 2xx response.
+> 
+> Once the twelve retries have been used up, your webhook ID will be disabled and you will need to [enable](/reference/enable-a-webhook) it again.
+
+To try webhooks in test mode, you may refer to this [link](/docs/testing#section-webhooks)
+
+### 3\. Securing a Webhook. Optional but highly recommended.
+
+Exposing an API endpoint on your server may pose a security risk if unsecured. Websites other than PayMongo may try to access these endpoints to get information, modify your data or overload your servers. To prevent this, we add a `Paymongo-Signature` HTTP header to the data that we send to your webhook. This header can be used to verify that the request came from PayMongo. Below is a sample `Paymongo-Signature` header. 
+
+Text
+
+`t=1496734173,te=1447a89e7ecebeda32sffs62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd,li=3f7bs59d200aae63f272406069a9788598b792a944a07aba816edb039989a39
+`
+
+The `Paymongo-Signature` is made of three parts separated by comma `,`:
+
+1. `t` is the timestamp of the request.
+2. `te` is the `test mode` signature.
+3. `li` is the `live mode` signature.
+
+**` li` vs `te`**
+
+The next step is to generate a signature with the help of the webhook's secret key and compare this to the signature. You must compare the signature that you will generate against the `li`'s value if the event is in live mode or `te` if in test mode.
+
+##### 1\. Split `Paymongo-Signature` into three parts: `t`, `te` and `li`. The signature uses `,` to separate the timestamp and the signatures for live and test modes.
+
+##### 2\. Concatenate the following to create your own signature:
+
+>> a. The timestamp as a string, e.g. `1496734173`  
+>> b. A `.` character  
+>> c. The JSON payload of the request you received. NOTE: You must get the raw payload of the request. Check your programming language or frameworks on how to get the raw payload of an API request.
+
+##### 3\. Run the concatenated values through [HMAC with SHA256 hash function](https://en.wikipedia.org/wiki/HMAC) with the webhook’s secret key as the [cryptographic key](https://en.wikipedia.org/wiki/Cryptographic%5Fkey). The webhook’s signing secret key is returned in the HTTP response when the [webhook was created](/reference/post%5Fwebhooks-1).
+
+##### 4\. Compare your own signature against the signature from the `li` for live mode while `te` for test mode. If they do not match, discard the request. This means the sender is not PayMongo.
+
+For additional security, you may also compare the timestamp from the header and the current timestamp. If the difference is too large, it may mean that the request is old and may have been reused. This is an optional step.
+
+> ### 🚧
+> 
+> Deleting webhooks
+> 
+> You cannot delete webhooks if you don't want to use them anymore. Instead, you can disable them to avoid receiving events for a certain webhook. You can check this [section](/reference/disable-a-webhook) for more information.

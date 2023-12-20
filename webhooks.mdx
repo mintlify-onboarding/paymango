@@ -1,0 +1,24 @@
+---
+title: "Webhooks"
+description: "What are webhooks?"
+---
+
+PayMongo provides webhooks that notify you of events happening during the payment process. Webhooks are particularly useful for asynchronous events such as payments succeeding, payments failing, or e-wallet Sources becoming `chargeable` by having funds authorized for them. 
+
+A good analogy for a webhook is that it is like a mobile number that PayMongo calls to notify you of activity in your PayMongo account. An example of an activity could be whenever a Source resource becomes `chargeable`. In this case, we send the Event resource including the event type and the Source resource data. The webhook URL (which is an API endpoint) is the receiver of the call who will react based on the data passed to this URL.
+
+ #### Webhook events
+
+PayMongo supports the following webhook events:
+
+| Webhook event                  | When the event gets sent                                                                                                                                                                                                      |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| source.chargeable              | Every time a GCash or GrabPay source has been authorized. This is essential for the [Source - Payment workflow](/docs/source-payment-workflow). This webhook event contains a [Source object](/reference/the-sources-object). |
+| payment.paid                   | Every time a successful payment has been made. This webhook event contains a [Payment object](/reference/payment-source).                                                                                                     |
+| payment.failed                 | Every time a payment failed. This event gets sent when the issuer or acquirer declines the payment. This webhook event contains a [Payment object](/reference/payment-source).                                                |
+| link.payment.paid              | Every time a Link has been paid. This webhook event contains a [Links object](/reference/links-resource).                                                                                                                     |
+| payment.refunded               | Every time a payment has been successfully refunded. This webhook event contains a [Payment object](/reference/payment-source).                                                                                               |
+| payment.refund.updated         | Every time a payment's refund is updated. This includes failed refunds. This webhook event contains a [Payment object](/reference/payment-source).                                                                            |
+| checkout\_session.payment.paid | Every time a Checkout Session has been paid. This webhook event contains a [Checkout Session object](/reference/checkout-session-resource)                                                                                    |
+
+This is just the start! As we grow with you, PayMongo will be introducing more webhooks that would help make accepting payments easier and more streamlined for developers.

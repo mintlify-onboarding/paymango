@@ -1,0 +1,62 @@
+---
+title: "Testing"
+description: "How could I create a test transactions?"
+---
+
+## Cards
+
+### Basic test card numbers
+
+Use any of the following test card numbers with a valid expiration date in the future and any random CVC number to create a successful payment.
+
+| Card Number      | Brand                    | CVC          | Expiration Date |
+| ---------------- | ------------------------ | ------------ | --------------- |
+| 4343434343434345 | Visa                     | Any 3 digits | Any future date |
+| 4571736000000075 | Visa (debit)             | Any 3 digits | Any future date |
+| 4009930000001421 | Visa (credit - PH)       | Any 3 digits | Any future date |
+| 4404520000001439 | Visa (debit - PH)        | Any 3 digits | Any future date |
+| 5555444444444457 | Mastercard               | Any 3 digits | Any future date |
+| 5455590000000009 | Mastercard (debit)       | Any 3 digits | Any future date |
+| 5339080000000003 | Mastercard (prepaid)     | Any 3 digits | Any future date |
+| 5240050000001440 | Mastercard (credit - PH) | Any 3 digits | Any future date |
+| 5577510000001446 | Mastercard (debit - PH)  | Any 3 digits | Any future date |
+
+### 3D Secure Test Card Numbers
+
+These are test credit card numbers for PaymentIntents API. Tokens API does not support 3DS authentication, therefore these cards will return an error if tokenized.
+
+| Card Number      | Description                                                                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4120000000000007 | 3DS authentication must be completed for the payment to be marked as paid.                                                                                                      |
+| 4230000000000004 | 3DS authentication must be completed but will be declined with generic\_decline sub code before authentication. A payment with a failed status will still be created.           |
+| 5234000000000106 | 3DS authentication must be completed but will be declined with generic\_decline sub code after successful authentication. A payment with a failed status will still be created. |
+| 5123000000000001 | 3DS authentication is supported but not required. The payment will be marked as paid.                                                                                           |
+
+### Test card numbers with specific scenarios
+
+Test cards below can be used to create payments that return specific error responses. This is useful for testing different errors scenarios. Required length and format for CVC and future dates for expiration dates are required in order to proceed with testing.
+
+| Card Number                                    | Description                                                                                                                                                                | Suggested action step                                                                                                                                     |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4200000000000018                               | The card used has already expired.Payment is declined with card\_expired sub code.                                                                                         | Request a different card or other form of payment.                                                                                                        |
+| 4300000000000017                               | The inputted CVC/CVN is incorrect for the the card number passed.Payment is declined with cvc\_invalid sub code.                                                           | Correct the CVC/CVN before re-submitting or request a different card or other form of payment.                                                            |
+| 44000000000000164028220000001457 (credit - PH) | The payment failed to be processed due to unknown reasons.Payment is declined with generic\_decline sub code.                                                              | Your customer needs to contact their card issuing bank for further details.                                                                               |
+| 4500000000000015                               | The payment was blocked by the processor as they suspect it to be fraudulent.Payment is declined with fraudulent sub code.                                                 | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| 51000000000001985240460000001466 (credit - PH) | The card does not have sufficient funds to complete the transaction.Payment is declined with insufficient\_funds sub code.                                                 | Request a different card or other form of payment.                                                                                                        |
+| 5200000000000197                               | The transaction was blocked by the processor as they suspect it to be fraudulent.Payment is declined with processor\_blocked sub code.                                     | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| 53000000000001965483530000001462 (credit - PH) | The card used is reported lost.Payment is declined with lost\_card sub code.                                                                                               | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| 5400000000000195                               | The card used is reported stolen.Payment is declined with stolen\_card sub code.                                                                                           | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| 5500000000000194                               | The processing of the card failed due to unknown reason.Payment is declined with processor\_unavailable sub code.                                                          | Wait for a few minutes before re-trying the transaction. Else, request a different card or other form of payment.                                         |
+| 4600000000000014                               | The transaction is blocked by PayMongo's fraud detection engine.Payment is declined with blocked sub code.                                                                 | We highly recommend to NOT expose the code and detail of this sub code to your customers. Instead, inform them as you would with a generic decline error. |
+| 5417881844647288                               | Cancelling a payment intent will fail when the payment intent status is awaiting\_capturePayment is declined with resource\_failed\_state sub code.This is a non-3DS card. | Wait for a few minutes and retry cancelling.                                                                                                              |
+| 5417886761138807                               | Cancelling a payment intent will fail when the payment intent status is awaiting\_capturePayment is declined with resource\_failed\_state sub code.This is a 3DS card.     | Wait for a few minutes and retry cancelling.                                                                                                              |
+
+   
+## Other payment methods
+
+Testing using other payment methods will return test checkout URLs. This is a checkout URL provided by PayMongo to simulate `successful` and `failed` checkout scenarios.
+
+   
+## Webhooks
+
+To receive events when testing webhooks, you must first create one using your test mode API key. You will then receive data that are in test mode via your created webhook. When you are done with the integration, you must create another webhook, but this time using your live mode API key in order to receive live data. If you will retain the test webhook once you go live, you have to make sure that you are checking the data in the proper mode. Another suggestion is to disable the test webhook once you go live.

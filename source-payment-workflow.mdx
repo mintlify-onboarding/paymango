@@ -1,0 +1,135 @@
+---
+title: "Sources workflow"
+description: "How do I implement the Sources workflow?"
+---
+
+**The Sources workflow is used to accept GCash and GrabPay payments.**
+
+A [Source Resource](/reference/the-sources-object) is a resource to generate your customer's payment instrument. This is normally used to generate check out URLs for e-wallet payments. 
+
+A [Payment Resource](/reference/payment-source) is an attempt by your customer to send you money in exchange for your product. This is a reference to an amount that you are expecting to receive if a payment resource with paid status becomes a part of a payout.  
+  
+## Implementation
+
+> ### 📘
+> 
+> In navigating this guide, you will encounter Recipes and API References. **Recipes** are snippets of API calls that differentiates the API call from each Payment Method. **API References** are the page where you can test out and view the fields for each API call.
+
+###  Prerequisite
+
+[API Reference](https://developers.paymongo.com/v2/reference/create-a-webhook) 
+
+ You would have to set up a [webhooks](/docs/webhooks) that listens to the `source.chargeable` event in order to consistently accommodate GCash and GrabPay payments. Create an endpoint where we can send in POST requests that notifies you of events. Register this endpoint with us by creating a webhook. You can directly create a webhook from our [Create a Webhook API](/reference/create-a-webhook).
+
+### 1\. Create a Source
+
+[Recipe](https://developers.paymongo.com/v2/recipes/creating-a-source-recipe) [API Reference](https://developers.paymongo.com/v2/reference/create-a-source) 
+
+ When a customer initiates a GCash or a GrabPay payment, create a source by calling our [Create A Source API](/reference/create-a-source). You need to specify information such as the amount to authorize and to what URL to redirect the customer once the authorization is successful or if the customer failed to authorize the amount. This returns a [source object](/reference/the-sources-object). 
+
+JSON
+
+`{
+    "data": {
+        "id": "src_1bLmj5BnqV2fCnM1SGGTdcrf",
+        "type": "source",
+        "attributes": {
+            "amount": 10000,
+            "billing": {
+                "address": {
+                    "city": "Taguig",
+                    "country": "PH",
+                    "line1": "9th Avenue and 26th Street, Unit 3308",
+                    "line2": "High Street South Corporate Plaza Tower 2",
+                    "postal_code": "1634",
+                    "state": "Metro Manila"
+                },
+                "email": "[[email protected]](/cdn-cgi/l/email-protection)",
+                "name": "Juan Dela Cruz",
+                "phone": "09168268582"
+            },
+            "currency": "PHP",
+            "livemode": false,
+            "redirect": {
+                "checkout_url": "https://test-sources.paymongo.com/sources?id=src_1bLmj5BnqV2fCnM1SGGTdcrf",
+                "failed": "https://mysite.com/gcash/failed",
+                "success": "https://mysite.com/gcash/success"
+            },
+            "status": "pending",
+            "type": "gcash",
+            "created_at": 1586192301,
+            "updated_at": 1586192301
+        }
+    }
+}
+`
+
+   
+### 2\. Redirect the Customer for Authentication 
+
+You would have to redirect the customer to their e-wallet page for them to authorize the payment. The source object should contain the `checkout_url` attribute. When a customer authorizes the payment, we'll be sending you a source.chargeable event. 
+
+   
+###  3\. Create a Payment in your webhook code 
+
+[API Reference](https://developers.paymongo.com/v2/reference/create-a-payment) 
+
+Make sure you're successfully receiving the source.chargeable event. In the webhook code, call the [Create a Payment API](/reference/create-a-payment). Keep in mind that if you fail to create a payment within an hour, the authorized funds gets refunded to the customer. 
+
+The code below is an example of how to set up a webhook handler that creates a Payment object after being sent a `source.chargeable` event:
+
+PHP
+
+`<?php
+header('Content-Type: application/json');
+$request = file_get_contents('php://input');
+$payload = json_decode($request, true);
+$type = $payload['data']['attributes']['type'];
+
+//If event type is source.chargeable, call the createPayment API
+if ($type == 'source.chargeable') {
+  $amount = $payload['data']['attributes']['data']['attributes']['amount'];
+  $id = $payload['data']['attributes']['data']['id'];
+  $description = "GCash Payment Description"
+  $curl = curl_init();
+  $fields = array("data" => array ("attributes" => array ("amount" => $amount, "source" => array ("id" => $id, "type" => "source"), "currency" => "PHP", "description" => $description)));
+  $jsonFields = json_encode($fields);
+	
+  curl_setopt_array($curl, [
+    CURLOPT_URL => "https://api.paymongo.com/v1/payments",
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => "",
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 30,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => "POST",
+    CURLOPT_POSTFIELDS => $jsonFields,
+    CURLOPT_HTTPHEADER => [
+      "Accept: application/json",
+      //Input your encoded API keys below for authorization
+      "Authorization:" ,
+      "Content-Type: application/json"
+    ],
+  ]);
+
+  $response = curl_exec($curl);
+  //Log the response
+  $fp = file_put_contents( 'test.log', $response );
+  $err = curl_error($curl);
+
+  curl_close($curl);
+
+  if ($err) {
+    echo "cURL Error #:" . $err;
+    //Log the response
+    $fp = file_put_contents( 'test.log', $err );
+  } else {
+    echo $response;
+  }
+}
+`
+
+   
+### 4\. Finish
+
+ If you setup your webhooks, we'll also send you a webhook event whether the payment is successful or failed. You can also asynchronously call the Retrieve A Source API to check the status of the source. [https://developers.paymongo.com/reference/retrieve-a-source](/reference/retrieve-a-source)

@@ -1,0 +1,53 @@
+---
+title: "Save Card Test Cases"
+description: "If you find yourself needing to vault cards, you can also refer to the tests below. They mimic the same test cases as straight payments. The difference is that during card enrollment with failed scenarios, the card is not vaulted."
+---
+
+> ### 📘
+> 
+> Card Enrollment
+> 
+> These are the test cases when enrolling a card
+> 
+> Pre-requisites:
+> 
+> * Customer must be present under the organization so that card can be vaulted:  
+>   * POST /customers/  
+>   * Phone number and email must be unique for the customer during creation
+> * Payment Intent should have the setup\_future\_usage section populated with the existing customer object owned by the organization
+> * Successful payment must be done for payment method to be vaulted
+
+Note:  
+Below test cases can also be done via Manual Capture flow; expected results should also be the same as in the Manual Capture section, aside from the vaulting expected results.
+
+### Non-3DS Payments
+
+| Test Input       | Expected Response                                                                                                                                                                                                                                                                                                                                                  | Notes                                                                                                                                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 5555444444444457 | Same expected results as Successful non-3DS payment in General Test Cases sectionCard/Payment Method should be vaulted at the end of successful paymentCan be verified via GET /customers/:customer\_id/payment\_methods with :customer\_id provided as actual id valueCustomer payment method(s) should be returned                                               | This will currently not happen in production as of the moment as we currently block non-3DS payments while we figure out how to successfully process non-OTP payments with minimal risk on your side |
+| 4200000000000018 | Same expected results as Failed non-3DS payment in General Test Cases sectionCard/Payment Method should NOT be vaulted at the end of the failed paymentCan be verified via GET /customers/:customer\_id/payment\_methods with :customer\_id provided as actual id valueCustomer payment method(s) that resulted to a failed payment should NOT be vaulted/returned | Payment failed code should show the reason for failure                                                                                                                                               |
+
+### 3DS Payments
+
+| Test Input                                                                          | Expected Response                                                                                                                                                                                                                                                                                                                                                                                         | Notes                                                                               |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| 4120000000000007                                                                    | Same expected results as 3DS payment with successful authentication and successful payment in General Test Cases sectionCard/Payment Method should be vaulted at the end of successful paymentCan be verified via GET /customers/:customer\_id/payment\_methods with :customer\_id provided as actual id valueCustomer payment method(s) should be returned                                               | This shows a successful 3DS transaction                                             |
+| 5234000000000106                                                                    | Same expected results as 3DS payment with successful authentication and failed payment in General Test Cases sectionCard/Payment Method should NOT be vaulted at the end of the failed paymentCan be verified via GET /customers/:customer\_id/payment\_methods with :customer\_id provided as actual id valueCustomer payment method(s) that resulted to a failed payment should NOT be vaulted/returned | This shows a 3DS payment that passed authentication but failed in the charging step |
+| 4120000000000007 and pressing failed authentication in the test authentication page | Same expected results as 3DS payment with failed authentication in General Test Cases sectionCard/Payment Method should NOT be vaulted at the end of the failed paymentCan be verified via GET /customers/:customer\_id/payment\_methods with :customer\_id provided as actual id valueCustomer payment method(s) that resulted to a failed payment should NOT be vaulted/returned                        | This shows a 3DS payment that failed in the authentication step                     |
+
+### Reusing Vaulted Cards
+
+For vaulted cards, here are the test cases when reusing a vaulted card. We will add test cases in the future where one can simulate an enrolled card that fails on reuse. 
+
+> ### 📘
+> 
+> Pre-requisites:
+> 
+> * A Card/Payment Method should already be vaulted  
+>   * Customer Payment Method is present for the organization (see vaulting scenarios in the previous section)
+> * In Payment Intent creation; do not make use of setup\_future\_usage with a different customer id as the customer used in the vaulting of the Payment Method (this will return an error if the vaulted card is attempted for vaulting to a different customer)
+
+| Test Input             | Expected Response                                                                                                                                                                                                                                                                                                                                                    | Notes                                                                                                                                                                                                |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vault 5555444444444457 | **Successful non-3DS payment**To use a vaulted card; attach the vaulted customer payment method's Payment Method id to a new Payment IntentExpected results should be the same as Successful non-3DS payment in General Test Cases sectionNo new Card/Payment Method should be vaulted                                                                               | This will currently not happen in production as of the moment as we currently block non-3DS payments while we figure out how to successfully process non-OTP payments with minimal risk on your side |
+| Vault 4120000000000007 | **3DS payment with successful authentication and successful payment**To use a vaulted card; attach the vaulted customer payment method's Payment Method id to a new Payment IntentExpected results should be the same as 3DS payment with successful authentication and successful payment in General Test Cases sectionNo new Card/Payment Method should be vaulted | This shows a successful 3DS transaction                                                                                                                                                              |

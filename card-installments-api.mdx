@@ -1,0 +1,447 @@
+---
+title: "Card installments API"
+description: "How to implement the card installments?"
+---
+
+### **Overview**
+
+Card installments (powered by [Pay Later](https://www.letspaylater.ph/)) enables customers to split a credit card transaction over time based on the installment plan they have selected. With this payment method, customers are able to increase their spending capacity and make larger purchases. When your customer pays via card installments, you will receive the full amount (less a transaction fee) while it is your customer's bank who collects the installment payments over time.
+
+Currently, we support the following installment plans:
+
+* 3-months 0% interest
+* 6-months 0% interest
+* 12-months 0% interest  
+see our pricing [here](https://www.paymongo.com/pricing).
+
+**Supported banks**
+
+| Bank                                     | Status      |
+| ---------------------------------------- | ----------- |
+| Security Bank                            | Available   |
+| AUBChinabankRCBCMetrobankPNBLandbankHSBC | Coming soon |
+
+A Payment Intent resource is used to track and handle different states of the payment until it succeeds. There are some cards that do not require any further authentication when processing a payment while some cards require 3D Secure authentication.  
+Our Payment Intents API handles these complexities:
+
+* Automatic authentication handling
+* No double charge of payment
+* Simplified integration process compared to Tokens API.
+
+#### Payment Intent and Payment Method APIs
+
+ Get the list of installments offers then use the Payment Intents API together with Payment Methods API.
+
+![897](/images/b7e7bf6-Card_Installments_Workflow.jpeg "Card Installments Workflow.jpeg")
+
+Card Installments Workflow
+
+Building an integration with Payment Intents API involves two actions: creating and attaching a PaymentMethod to a PaymentIntent. A PaymentIntent resource represents a single shopping cart or customer session in your application. The PaymentIntent holds information such as the supported payment methods, the amount to collect, and the currency.
+
+  #### 1\. List all Card Installment Plans
+
+First, you need to make a GET request (`GET /card_installment_plans?amount=<amount>`) to return all available card installment plans from all issuers.
+
+Sample GET response:
+
+GET Card Installment Plans Response
+
+`{
+    "has_more": false,
+    "data": [
+        {
+            "auth_amount": 40000,
+            "bank_interest_rate": 0,
+            "distribution_type": "First Installment",
+            "geo_scope": "DomesticOnly",
+            "installment_config_id": "635318819",
+            "interest_amount_charged": 0,
+            "issuer_cashback_value": 0,
+            "issuer_id": "61713f86ee75d40926a36f49",
+            "issuer_name": "DBS Singapore",
+            "loan_amount": 40000,
+            "monthly_installment": 3333.33,
+            "months": 12,
+            "processing_fee_percent": 2,
+            "processing_fee_type": "Percentage",
+            "processing_fee_value": 800,
+            "product_type": "CREDIT",
+            "program_type": "MERCHANT",
+            "scheme_description": "merchant scheme with DBS data for online",
+            "scheme_id": "61add8c24ea9f66f0082493a",
+            "subvention_amount": 12000,
+            "subvention_type": "01",
+            "terms_and_conditions": "These terms govern the use of Pay Later Instalment Payment Plans. By using Pay Later Instalment Payment Plans ,Pay Later you are deemed to have read and agree to be bound by these Terms and Conditions , visit:https://www.dbs.com"
+        },
+        {
+            "auth_amount": 40000,
+            "bank_interest_rate": 0,
+            "distribution_type": "First Installment",
+            "geo_scope": "DomesticOnly",
+            "installment_config_id": "635318819",
+            "interest_amount_charged": 0,
+            "issuer_cashback_value": 0,
+            "issuer_id": "61713f86ee75d40926a36f49",
+            "issuer_name": "DBS Singapore",
+            "loan_amount": 40000,
+            "monthly_installment": 1666.67,
+            "months": 24,
+            "processing_fee_percent": 3,
+            "processing_fee_type": "Percentage",
+            "processing_fee_value": 1200,
+            "product_type": "CREDIT",
+            "program_type": "MERCHANT",
+            "scheme_description": "merchant scheme with DBS data for online",
+            "scheme_id": "61add8c24ea9f66f0082493a",
+            "subvention_amount": 12000,
+            "subvention_type": "01",
+            "terms_and_conditions": "These terms govern the use of Pay Later Instalment Payment Plans. By using Pay Later Instalment Payment Plans ,Pay Later you are deemed to have read and agree to be bound by these Terms and Conditions , visit:https://www.dbs.com"
+        },
+        {
+            "auth_amount": 40000,
+            "bank_interest_rate": 0,
+            "distribution_type": "First Installment",
+            "geo_scope": "DomesticOnly",
+            "installment_config_id": "635318819",
+            "interest_amount_charged": 0,
+            "issuer_cashback_value": 0,
+            "issuer_id": "61713f86ee75d40926a36f49",
+            "issuer_name": "DBS Singapore",
+            "loan_amount": 40000,
+            "monthly_installment": 1111.11,
+            "months": 36,
+            "processing_fee_percent": 4,
+            "processing_fee_type": "Percentage",
+            "processing_fee_value": 1600,
+            "product_type": "CREDIT",
+            "program_type": "MERCHANT",
+            "scheme_description": "merchant scheme with DBS data for online",
+            "scheme_id": "61add8c24ea9f66f0082493a",
+            "subvention_amount": 12000,
+            "subvention_type": "01",
+            "terms_and_conditions": "These terms govern the use of Pay Later Instalment Payment Plans. By using Pay Later Instalment Payment Plans ,Pay Later you are deemed to have read and agree to be bound by these Terms and Conditions , visit:https://www.dbs.com"
+        },
+        {
+            "auth_amount": 40000,
+            "bank_interest_rate": 0,
+            "distribution_type": "First Installment",
+            "geo_scope": "DomesticOnly",
+            "installment_config_id": "635318819",
+            "interest_amount_charged": 0,
+            "issuer_cashback_value": 0,
+            "issuer_id": "61713f86ee75d40926a36f49",
+            "issuer_name": "DBS Singapore",
+            "loan_amount": 40000,
+            "monthly_installment": 833.33,
+            "months": 48,
+            "processing_fee_percent": 5,
+            "processing_fee_type": "Percentage",
+            "processing_fee_value": 2000,
+            "product_type": "CREDIT",
+            "program_type": "MERCHANT",
+            "scheme_description": "merchant scheme with DBS data for online",
+            "scheme_id": "61add8c24ea9f66f0082493a",
+            "subvention_amount": 12000,
+            "subvention_type": "01",
+            "terms_and_conditions": "These terms govern the use of Pay Later Instalment Payment Plans. By using Pay Later Instalment Payment Plans ,Pay Later you are deemed to have read and agree to be bound by these Terms and Conditions , visit:https://www.dbs.com"
+        }
+    ]
+}
+`
+
+**Installments UI requirements**  
+In order to follow branding guidelines with our partner, we would require the checkout page to contain the following:
+
+1. Pay Later logo
+2. Processing fees
+3. Terms and conditions  
+Please message our support team for us to send you the Pay Later logos. For the processing fees and terms and conditions, these would both be retrievable from the response after making a GET request to return the available plans and issuer.
+
+Here's an example from our Shopify plug-in checkout flow:
+
+![](/images/2e5cd9e-Shopify_Checkout.png "Shopify Checkout.png")
+
+![](/images/b0ef130-image.png "image.png")
+
+  #### 2\. Create a PaymentIntent from the server side
+
+To start receiving payments with Payment Intents API, you must create one first. You must [create your PaymentIntent ](/reference/getting-started-with-your-api#create-a-paymentintent) from your backend using your [secret API key](/docs/authentication#section-public-and-secret-keys) then send the `client_key` of the response to the client-side. This `client_key` will be used to attach a payment method to the payment intent. In this step, the payment intent's status is `awaiting_payment_method`.
+
+**Include card installment attributes**  
+Card installments attributes:  
+Make sure to include the `payment_method_options.card.installments.enabled` endpoint to indicate if the payment should be made through card installments:
+
+Installments Payment Intent RequestInstallments Payment Intent Response
+
+`{
+    "data": {
+        "attributes": {
+            "amount": 10000,
+            "payment_method_allowed": [
+                "card"
+            ],
+            "payment_method_options": {
+                "card": {
+                    "request_three_d_secure": "any",
+                    "installments": {
+                        "enabled": true
+                    }
+                }
+            },
+            "description": "Ube Cheese Pandesal",
+            "statement_descriptor": "BakeryShop",
+            "currency": "PHP"
+        }
+    }
+}
+`
+
+`{
+    "data": {
+        "id": "pi_cNSDhamiqAv6cVRxtEsBKFnH",
+        "type": "payment_intent",
+        "attributes": {
+            "amount": 10000,
+            "currency": "PHP",
+            "description": "Ube Cheese Pandesal",
+            "statement_descriptor": "BakeryShop",
+            "status": "awaiting_payment_method",
+            "livemode": true,
+            "client_key": "pi_cNSDhamiqAv6cVRxtEsBKFnH_client_VVfM6YaLGspoPmajegTyMGF7",
+            "created_at": 1594217144,
+            "updated_at": 1594217144,
+            "last_payment_error": null,
+            "payment_method_allowed": [
+                "card"
+            ],
+            "payments": [],
+            "next_action": null,
+            "payment_method_options": {
+                "card": {
+                    "request_three_d_secure": "any",
+                    "installments": {
+                        "enabled": true
+                    }
+                }
+            },
+            "metadata": null
+        }
+    }
+}
+`
+
+> ### 🚧
+> 
+> Statement descriptors
+> 
+> The value of the statement descriptor is what appears on your customers' statement of account. To avoid disputes, please ensure that the statement descriptor is clear and recognizable. Normally, this should be the name of your business or the website where the transaction occurred, e.g. The Barkery. _The default value is your account's business name._
+> 
+> Please note that only the first 11 characters of your statement descriptor will be visible on your customer's statement of account. For example, the statement descriptor `The Philippine Barkery Bakeshop` will show up as `The Philipp`. To make the statement descriptor recognizable, it can be simplified to `The Barkery` or `Barkery PH`.
+
+  #### 3\. Send Card Information to PayMongo
+
+From the client-side, the collected credit card information must be sent to PayMongo by [creating a PaymentMethod](/reference#create-a-paymentmethod) then [attaching it to the PaymentIntent](/reference#attach-to-paymentintent). Using the client\_key, you can get the PaymentIntent ID and use it as the identifier of PaymentIntent in the attach endpoint . For better user experience, an asynchronous call is highly recommended to lessen page redirections.  
+Once the Payment Method is attached, the Payment Intent status transitions to `awaiting_next_action` ,` awaiting_payment_method `, `processing` or `succeeded`. You can check the status of the Payment Intent from the JSON response of the attach payment method endpoint.
+
+> ### 📘
+> 
+> Note: when attaching a PaymentMethod to the PaymentIntent, make sure to include the payment\_method\_options.card.installments.plan endpoint to define the selected card installment plan.  
+> Request
+
+Creating a Payment Method Request
+
+`{
+    "data": {
+        "attributes": {
+            "details": {
+                "card_number": "4120000000000007",
+                "exp_month": 12,
+                "exp_year": 2024,
+                "cvc": "123"
+            },
+            "billing": {
+                "address": {
+                    "line1": "123 main street",
+                    "city": "cainta",
+                    "state": "rizal",
+                    "postal_code": "1234",
+                    "country": "PH"
+                },
+                "name": "Mang Juan",
+                "email": "[[email protected]](/cdn-cgi/l/email-protection)",
+                "phone": "09111111111"
+            },
+            "type": "card",
+            "payment_method_options": {
+                "card": {
+                    "installments": {
+                        "plan": {
+                            "issuer_id": "00000000000000000000000",
+                            "tenure": 6
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+`
+
+`awaiting_next_action` means your customer must authenticate the card. The response includes a redirect URL where the customer can proceed with 3D Secure authentication. You can render an iframe in a modal to display the authentication page. Once the user successfully authenticates the card, you can recheck the status of Payment Intent.
+
+Attaching Payment Method to the Payment Intent
+
+`` // The example is using axios as the REST client on the client-side.// This PaymentMethod ID must be created before the attach action. This is just a sample value to represent a PaymentMethodvar paymentMethodId = 'pm_ajeDG2y6WgnrCXaamWFmPUw2';
+
+// PaymentIntent client_key examplevar clientKey = 'pi_1JvFbEiRRnh2fsUE5nJ2F1z7_client_mpe6tJkgaX3pSoiYeSp1AbEU';
+
+// Get the payment intent id from the client keyvar paymentIntentId = clientKey.split('_client')[0];
+
+axios.post(
+  'https://api.paymongo.com/v1/payment_intents/' + paymentIntentId + '/attach',
+  {
+    data: {
+      attributes: {
+        client_key: clientKey,
+        payment_method: paymentMethodId,
+        payment_method_options: {
+          card: {
+            installments: {
+              plan: {
+                issuer_id: "61713f86ee75d40926a36f49",
+                tenure: 12
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    headers: {
+      // Base64 encoded public PayMongo API key.Authorization: `Basic ${window.btoa(key)}`
+    }
+    }
+).then(function(response) {
+  var paymentIntent = response.data.data;
+  var paymentIntentStatus = paymentIntent.attributes.status;
+  
+  if (paymentIntentStatus === 'awaiting_next_action') {
+    // Render your modal for 3D Secure Authentication since next_action has a value. You can access the next action via paymentIntent.attributes.next_action.
+  } else if (paymentIntentStatus === 'succeeded') {
+    // You already received your customer's payment. You can show a success message from this condition.
+  } else if(paymentIntentStatus === 'awaiting_payment_method') {
+    // The PaymentIntent encountered a processing error. You can refer to paymentIntent.attributes.last_payment_error to check the error and render the appropriate error message.
+  }  else if (paymentIntentStatus === 'processing'){
+    // You need to requery the PaymentIntent after a second or two. This is a transitory status and should resolve to `succeeded` or `awaiting_payment_method` quickly.
+  }
+})
+ ``
+
+We send a 3DS-authentication-complete post message from the iframe to your page once authentication is complete. You can use this event to do further actions once the payment intent status has changed.
+
+Listening to Customer Authentication
+
+`` window.addEventListener(
+  'message',
+  ev => {
+    if (ev.data === '3DS-authentication-complete') {
+      // 3D Secure authentication is complete. You can requery the payment intent again to check the status.// PaymentIntent client_key examplevar clientKey = 'pi_1JvFbEiRRnh2fsUE5nJ2F1z7_client_mpe6tJkgaX3pSoiYeSp1AbEU';
+      
+      axios.get(
+        'https://api.paymongo.com/v1/payment_intents/' + paymentIntentId + '?client_key=' + clientKey,
+        {
+          headers: {
+            // Base64 encoded public PayMongo API key.Authorization: `Basic ${window.btoa(key)}`
+          }
+        }
+      ).then(function(response) {
+        var paymentIntent = response.data.data;
+        var paymentIntentStatus = paymentIntent.attributes.status;
+
+        if (paymentIntentStatus === 'succeeded') {
+          // You already received your customer's payment. You can show a success message from this condition.
+        } else if(paymentIntentStatus === 'awaiting_payment_method') {
+          // The PaymentIntent encountered a processing error. You can refer to paymentIntent.attributes.last_payment_error to check the error and render the appropriate error message.
+        } else if (paymentIntentStatus === 'processing'){
+          // You need to requery the PaymentIntent after a second or two. This is a transitory status and should resolve to `succeeded` or `awaiting_payment_method` quickly.
+            }
+      })
+    }
+  },
+  false
+);
+ ``
+
+`awaiting_payment_method` means there are errors after attaching the Payment Method to the PaymentIntent. You can check the attribute `last_payment_error` from the response. If this occurs, the customer can try to input their credit card information again.
+
+`processing` is a transitory status that indicates that the payment is being processed. This status will eventually resolve to succeeded or `awaiting_payment_method`. If this occurs, you should requery the status of the PaymentIntent in 1-2 seconds.
+
+`succeeded` means you received the payment of the customer and you can show a success message after this happened.
+
+Whenever you will attach a PaymentMethod to a PaymentIntent and the PaymentIntent becomes succeeded or you encountered a payment error, a Payment is automatically created for you. This means that you don't need to call the create Payment after attaching a PaymentMethod. You can verify if you received the payment by going to the Payments module of your dashboard or you can also retrieve the PaymentIntent using secret API key and check the payments attribute.
+
+  #### 4\. Monitoring PaymentIntents through webhooks
+
+Get notified when you have successful or failed transactions by using webhooks. To monitor the transition of the PaymentIntent from your backend, you could be notified for successful and failed payments by listening to `payment.paid` and `payment.failed` events by registering your webhook endpoint using our [Webhook API](/reference#webhook-resource). You can determine if a payment is successful or not by checking the event type or the status of the payment intent.
+
+> ### 🚧
+> 
+> Webhooks
+> 
+> You should not create a webhook in your code. You can try using API tools such as Postman or curl to create your webhook once. Please take note that you should not create multiple webhooks for every source that will be created. One webhook with events `payment.paid` and `payment.failed` is enough to receive the chargeable source information.  
+> Event notifications will be sent to your registered webhook endpoint containing relevant payment information as shown below:
+
+payment.paid Event for successful payments
+
+`{
+  "data": {
+    "id": "evt_9w6KTxQY3hmuDQaALHoAZnRp",
+    "type": "event",
+    "attributes": {
+      "type": "payment.paid",
+      "livemode": false,
+      "data": {
+        "id": "pay_JMg1rgaUtg5U79rRSjiDUvLr",
+        "type": "payment",
+        "attributes": {
+          "access_url": null,
+          "amount": 10000,
+          "balance_transaction_id": "bal_txn_4LqZEXFNKR9e8GyAmXBgBF1C",
+          "billing": null,
+          "currency": "PHP",
+          "description": null,
+          "disputed": false,
+          "external_reference_number": null,
+          "fee": 1850,
+          "foreign_fee": 100,
+          "livemode": false,
+          "net_amount": 8050,
+          "origin": "api",
+          "payment_intent_id": "pi_1Pb5ED9RDLCSsWMwXT5W6Q3K",
+          "payout": null,
+          "source": {
+            "id": "card_iYXhMRiwoiF45V2fDL6aTjqN",
+            "type": "card",
+            "brand": "visa",
+            "country": "US",
+            "last4": "4345"
+          },
+          "statement_descriptor": "Rigorilla Tech",
+          "status": "paid",
+          "tax_amount": null,
+          "refunds": [],
+          "taxes": [],
+          "available_at": 1619686800,
+          "created_at": 1619426488,
+          "paid_at": 1619426488,
+          "updated_at": 1619426488
+        }
+      },
+      "previous_data": {},
+      "created_at": 1619426488,
+      "updated_at": 1619426488
+    }
+  }
+}
+`

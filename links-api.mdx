@@ -1,0 +1,30 @@
+---
+title: "Links API"
+description: "How do I create a PayMongo Link using an API Call?"
+---
+
+### Overview
+
+PayMongo Links can be created in bulk or through a script. Through the PayMongo Links API, you are able to create, retrieve, archive and unarchive a Link. These API calls will return a [PayMongo Link Object](/reference/links-resource).  
+  
+### API Reference Guide
+
+---
+
+#### Create a Link
+
+The [Create a Link](/reference/create-a-link) endpoint allows you to create a link.  
+  
+#### Retrieve a Link
+
+The [Retrieve a Link](/reference/retrieve-a-link) endpoint returns a Link object given the Link's ID (example: `link_wWaibr22CzEnficNhQNPUdoo`).  
+  
+#### Get a Link by reference number
+
+The \[Get Link by reference number\] ([https://developers.paymongo.com/reference/get-link-by-reference-number](/reference/get-link-by-reference-number)) endpoint returns a Link object given the Link's reference number (example: `WTmSJbV`).  
+  
+#### Archive a Link
+
+The \[Archive a Link\] ([https://developers.paymongo.com/reference/archive-a-link](/reference/archive-a-link)) archives a Link given the Link ID. In turn, the \[Unarchive a Link\] ([https://developers.paymongo.com/reference/unarchive-a-link](/reference/unarchive-a-link)) endpoint can unarchive the Link.  
+  
+In addition to this, we also added another webhook event: `link.payment.paid` to keep track of paid Links. For more information about webhooks feel free to checkout our [webhooks guide](/docs/webhooks)

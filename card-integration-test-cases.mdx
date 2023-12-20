@@ -1,0 +1,39 @@
+---
+title: "General Card Integration Test Cases"
+description: "How can I test my card integration?"
+---
+
+These detailed test cases can be used to check your card integration with PayMongo. This step is optional but we **highly recommend** running these cases. These test cases were developed along with our internal QA team to account for every possible flow through the system.
+
+## Recommended Test Cases
+
+This shows the test cases for all scenarios regardless if you integrate straight card payments, save card, or the hold then capture integration.
+
+> ### 📘
+> 
+> Tip for checking the status of Payment Intents
+> 
+> A Payment Intent's status value can be verified through the GET /payment\_intents/id endpoint and using your test keys.
+
+### Non-3DS Cards
+
+These cards will not return the 3DS URL upon attachment. 
+
+| Card Number      | Expected Response                                                                                                                                                                                                    | Notes                                                                                                            |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 5555444444444457 | **A successful non-3DS card payment.** Payment Intent status value is succeeded.A Payment object with a paid status is attached to the Payment Intent. (in the Payments array section of the Payment Intent object). | As of the moment, this will not happen in production since we currently block non-3DS payments to minimize risk. |
+| 4200000000000018 | **A failed non-3DS card payment**Failed subcode for failed Payment and Payment Intent should be card\_expiredPayment Intent status value is awaiting\_payment\_method.                                               | Payment failed subcode should show the reason for the failure.                                                   |
+
+### 3DS Cards
+
+Note 1: Upon attachment, the Payment Intent status value is `awaiting_next_action` and a redirect URL is returned.
+
+Note 2: Open the redirect URL and select `Authorize Test Payment` to proceed with the authorization and automatic capture. An Authentication Complete message is returned on the webpage.
+
+Note 3: Open the redirect URL and select `Fail Test Payment` to proceed with authorization and automatic capture. An Authentication failed or canceled message is returned on the webpage.
+
+| Card Number                                                                         | Expected Response                                                                                                                                                                                                                                                                                                     | Notes                                                                                |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| 4120000000000007                                                                    | **3DS payment with successful authentication and successful payment**After doing _Note 1 and 2_, the Payment Intent status value should become succeeded.A Payment object with a paid status is attached to the Payment Intent (in the Payments array section of the Payment Intent object).                          | This shows a successful 3DS transaction.                                             |
+| 5234000000000106                                                                    | **3DS payment with successful authentication and failed payment**After doing _Note 1 and 2_, A Payment object with a failed status is attached to the Payment Intent (in the Payments array section of the Payment Intent object).The failed subcode for failed Payment and Payment Intent should be generic\_decline | This shows a 3DS payment that passed authentication but failed in the charging step. |
+| 4120000000000007 and pressing failed authentication in the test authentication page | **3DS payment with failed authentication**After doing _Note 1 and 3_, Payment Intent status value should stay as awaiting\_payment\_method.No Payment object is attached to the Payment Intent                                                                                                                        | This shows a 3DS payment that failed in the authentication step.                     |

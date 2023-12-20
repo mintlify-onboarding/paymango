@@ -1,0 +1,18 @@
+---
+title: "Refunds API"
+description: "How do I refund a transaction using an API call?"
+---
+
+Through the Refunds API, you could initiate a refund request through an API Call. 
+
+### 1\. Create a Refund
+
+To call for a refund, you'll simply need to [create](/reference/create-a-refund) a [Refund resource](/reference/refund-resource). If the response is successful, the refund will have been processed.
+
+### 2\. Monitoring Refunds through webhooks
+
+Get notified when there are updates on the Refund resource through the use of webhooks. You can subscribe to the following events:  
+• `payment.refunded` to receive notifications when your payment has been successfully refunded.  
+• `payment.refund.updated` to receive notifications when the status of your refund has been updated.
+
+To know more about receiving events with webhooks, you may refer to this [link](/docs/webhooks).

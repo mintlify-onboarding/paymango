@@ -1,0 +1,109 @@
+---
+title: "Save Card API"
+description: "How to implement the Save Card feature?"
+---
+
+> ### 🚧
+> 
+> Account configuration is required before development
+> 
+> We need to configure your account (whether you are planning to use our test keys or live keys) before your developers can start testing and integration. Kindly message **[\[email protected\]](/cdn-cgi/l/email-protection#a4d7d1d4d4cbd6d0e4d4c5ddc9cbcac3cb8ac7cbc9)** to request for key configuration.
+
+The Save Card feature also known as _Card Vaulting_ allows merchants the ability to save and reuse card details on our platform. This serves a variety of purposes:
+
+1. Better user experience for returning customers
+2. Allows merchants to charge customers off session.
+
+To distinguish between the two main use cases, we'll denote the first as **on session** while the latter as **off session.** This is because the customer is in the checkout session for the previous case, while the merchant charges the merchants, like a subscription service, while the cardholder is not on the checkout page.
+
+| Session Type | Description                                                                                |
+| ------------ | ------------------------------------------------------------------------------------------ |
+| on session   | Allow cardholders to use a vaulted card when they want to purchase in the future.          |
+| off session  | Allow merchants to charge the cardholders even without the intervention of the cardholder. |
+
+## Integrating Save Card through the Payment Intent Workflow
+
+The [payment intent workflow](/docs/accepting-cards) is the main workflow used to make payments via PayMongo. Straight card payments are made via this workflow. To enable `save card`, a few additional steps just need to be added to the existing workflow.
+
+### Saving a card
+
+You only need to do this for new customers. This is an indication to allow PayMongo to save the details of the customer's billing information after the customer's first transaction. 
+
+#### 1\. Creating a Customer
+
+[Create a Customer API Reference](https://developers.paymongo.com/reference/create-a-customer) 
+
+The merchant has to create a customer to be able to save cards to that merchant's customer. Note that customers are unique to a merchant. The same customer, or the saved cards to the customer, currently can't be used for another merchant's transactions. This will be for future use.
+
+#### 2\. Saving a Card to a Customer
+
+[Card Vaulting Payment Intent Recipe](https://developers.paymongo.com/v2/recipes/card-vaulting-payment-intent) [API Reference](https://developers.paymongo.com/reference/create-a-paymentintent) 
+
+Once the customer is created, the merchant will be able to save the card. The following attributes have to be added when creating a payment intent when saving a card:
+
+JSON
+
+`"setup_future_usage": {
+  "session_type": "on_session",
+  "customer_id": "cus_Exy3jegPk4eEagpQcE6wnLB4"
+}
+`
+
+The `setup_future_usage` parameter indicates that the payment method will be used in future transactions. The `session_type` indicates how the payment method will be used; either `on_session` or `off_session` charges. For now, only `on_session` is supported. The `customer_id` is the customer ID corresponding to the cardholder.
+
+### Using a Saved Card
+
+We designed the following workflow to use a saved card:
+
+#### 1\. Verify existence of Customer
+
+[Retrieve Customer API Reference](https://developers.paymongo.com/reference/retrieve-customer) 
+
+The idea of this is to be able to verify if the customer in their checkout page exists in the list of already existing merchants. If the merchant is sufficiently confident that the customer exists, then they don't need to do this step.
+
+To be able to verify the customer, the merchant can either:
+
+1. Save the customer ID in their database
+2. Verify the existence based on email and phone number.
+
+The merchant can use the email or phone number as we made them unique per customer of each merchant. This is in preparation for the future where we can send OTPs to the email and phone number to verify the cardholder on checkout.
+
+For any of these, the merchant can use the [Retrieve a Customer](/reference/retrieve-customer) endpoint.
+
+#### 2\. Choose among the saved payment methods
+
+[Retrieve the Payment Methods of a Customer API Reference](https://developers.paymongo.com/reference/retrieve-customer-payment-method) 
+
+Once the merchant identifies the customer in their checkout page, the merchant can fetch all the saved payment methods of the customer. The merchant can use the [Retrieve the Payment Methods of a Customer](/reference/retrieve-customer-payment-method) endpoint. Once fetched, the customer can choose among the returned payment methods to charge with.
+
+#### 3\. Updating the CVC of the card (on\_session transactions)
+
+[Update Payment Method API Reference](https://developers.paymongo.com/reference/update-a-paymentmethod) 
+
+Once the customer picks a vaulted card, the merchant needs to collect the CVC and update the payment method in the backend. This is done by calling the [Update a PaymentMethod](/reference/update-a-paymentmethod) endpoint. Once the payment method is updated, the card can now be charged.
+
+#### 4\. Charge the saved payment method
+
+[Attach API Reference](https://developers.paymongo.com/reference/attach-to-paymentintent) 
+
+To charge the vaulted card, the merchant can do the standard payment intent process of creating the payment intent by calling the [Create a PaymentIntent](/reference/create-a-paymentintent) endpoint. Shortly after this, the updated payment method needs to be attached to the created payment intent by calling the [Attach to PaymentIntent](/reference/attach-to-paymentintent) endpoint. 
+
+### Deleting a Customer or Saved Card
+
+The merchant also has the ability to delete a customer or a saved card that is saved to a customer via PayMongo's API. Note that once the customer or saved card is deleted, it cannot be used again for future transactions without having to create a new customer or save the card again to a customer.
+
+The merchant can use the [Delete a Customer](/reference/delete-a-customer) or the [Delete a Payment Method of a Customer](/reference/delete-a-payment-method-of-a-customer) endpoints to do this.
+
+### Test Mode Support
+
+Any test card that simulates a successful purchase can be used for vaulting.
+
+## System Limitations
+
+**We currently only support card vaulting for:**
+
+1. Merchants integrating via our API
+2. Merchants who have undergone enhanced KYC
+3. Merchants who have the ability to verify cardholder identity on checkout  
+a) OTP system  
+b) Account system

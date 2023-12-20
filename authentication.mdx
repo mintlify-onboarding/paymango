@@ -1,0 +1,59 @@
+---
+title: "Authentication"
+description: "How does PayMongo authenticate my requests?"
+---
+
+Your API requests to the PayMongo API must be authenticated using your account's API keys. An authentication error will be returned if the API key is not provided or is invalid.
+
+Every PayMongo account is provided with two API keys, one for _testing_ so you can try out the PayMongo API while waiting for your account to be activated, and another set of keys for running _live_ requests. Your API keys are available on the `Developers` tab of the [dashboard](https://dashboard.paymongo.com).
+
+### Test and live mode
+
+To test the PayMongo API, you can send API requests in test mode. This means all requests will not process actual payments. The test and live modes function almost the same with a few differences:
+
+* In test mode, payments are not actually processed by our payment processing providers, and only our test sample data can be used.
+* Some API resources such as sources have a more complicated flow in live mode. It requires more steps than those in test mode.
+* You can only get your live API keys once your account is `activated`. You can toggle from the left side of your dashboard's sidebar if you want to get your test/live API keys.
+
+### Public and Secret keys
+
+ **Public Key**   
+This API key is solely used to identify your account when calling PayMongo API from the client-side.
+
+ **Secret Key**   
+If the public key is used from the client-side, the secret key is meant to be kept confidential and only stored on your own servers. Secret API key can perform any API requests to PayMongo without restriction and with access to overall data. Public API key has restricted data for some endpoints.
+
+> ### ❗️
+> 
+> Never share your secret keys
+> 
+> Treat your secret keys like your passwords. The best practice is to store the secret key in your server's environment variable and not hardcoded in your codebase. If, for any reason, you believe that your secret keys have been compromised, please contact us immediately at [\[email protected\]](/cdn-cgi/l/email-protection#debabba8bbb2b1aebbacad9eaebfa7b3b1b0b9b1f0bdb1b3) so we can revoke the old keys and give you new ones.
+> 
+> We're working on making the regeneration of keys available on the dashboard.
+
+### Example of API keys
+
+| API Key                            | Test or Live Mode? | Public or Secret? |
+| ---------------------------------- | ------------------ | ----------------- |
+| pk\_live\_1vnisVErtpKCmLz92kFnm7zn | live               | Public            |
+| sk\_live\_6vyisVErtpKCpLK9hkmT3zgn | live               | Secret            |
+| pk\_test\_1vaiknErtpKCpLKnhkaT37gn | test               | Public            |
+| sk\_test\_2byzkVErtpKCpLK9hkFT37gn | test               | Secret            |
+
+### Authenticate using your API keys
+
+To authenticate your API requests, use [HTTP Basic Auth](http://en.wikipedia.org/wiki/Basic%5Faccess%5Fauthentication) and provide your API key as the basic auth username, encoded in [Base64](https://en.wikipedia.org/wiki/Base64). You can leave the password field empty. Don't worry, it'll be [encrypted](/docs/encryption) when sent.
+
+You can try our [API Reference](/reference) section or use an API tool such as [Postman](https://www.postman.com/) to test your API keys.
+
+You can also checkout this [Base64 encoder tool](https://www.base64encode.net/).
+
+### Integration Example
+
+Postman Authentication
+
+![](/images/382f122-image.png)
+
+Developer Documentation 
+
+![](/images/b7eac7d-image.png)
